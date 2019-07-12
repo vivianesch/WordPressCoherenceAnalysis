@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/511418/56ef1ab5c02b4923817ad0a2f33c5718
+bundleId: https://api.rpubs.com/api/v1/document/511418/56ef1ab5c02b4923817ad0a2f33c5718
+url: http://rpubs.com/vivianesch/511418
+when: 1562628572.37399
