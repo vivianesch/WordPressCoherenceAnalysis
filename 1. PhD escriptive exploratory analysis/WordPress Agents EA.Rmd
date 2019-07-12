@@ -11,7 +11,7 @@ output: html_document
 2- Identify potential indicators for coherence analysis.
 
 **General Question:** *Wich are the atributes of coproduction (colunms of dataframe or variables)?*
-**Specific Questions:** *Which type of developers groups exist in WC? It is possible to make some indicator from this data?*
+**Specific Questions:** *Which type of developers groups exist in WC? It is possible to make some indicator from this data? *
 
 **Source:** Data come from WordPress Report Trac System.
 [URL Source](https://core.trac.wordpress.org/query?status=accepted&status=assigned&status=new&status=reopened&status=reviewing&col=id&col=summary&col=status&col=owner&col=type&col=priority&col=milestone&col=component&col=version&col=severity&col=resolution&col=time&col=changetime&col=focuses&col=reporter&col=keywords&order=priority)
