@@ -7,21 +7,50 @@ library(readr)
 TicketW <- read_csv('~/PhD Analysis/1. PhD escriptive exploratory analysis/TicketW.csv')
 View(TicketW)
 
-#2. UNIAVARIABLE ANALYSIS
+#2. EXPLORATORY ANALYSIS - UNIAVARIABLE ANALYSIS
+# Goal - Find which variables have hight variability and a line of cut, in order to use into Bivariate Analysis
 dim(TicketW) #dimension
 TicketW[1:5,]  #5 fist lines
 summary(TicketW)
 glimpse(TicketW)
 
-#2.1 Var1
+#2.1 Variables related with members
+# Var1
 Status<-table(TicketW$Status)
-# Transform into table Var1
+# Transform into table
 Status<-as.data.frame(as.table(Status))
+Status
 #Graphics
-plot(Status, main="Status")
 pie(Status$Freq, main="Frequency of Tickets Status", label=Status$Var1, col = rainbow(7))
 
+#Var2
+TType<-table(TicketW$Type)
+# Transform into table
+TType<-as.data.frame(as.table(TType))
+TType
+#Graphics
+pie(TType$Freq, main="Frequency of Tickets Type", label=TType$Var1, col = rainbow(7))
+
+#Var3
+Priority<-table(TicketW$Priority)
+# Transform into table
+Priority<-as.data.frame(as.table(Priority))
+Priority
+#Graphics
+pie(Priority$Freq, main="Frequency of Tickets Priority", label=Priority$Var1, col = rainbow(7))
+
+#Var4
+Milestone<-table(TicketW$Milestone)
+# Transform into table
+Milestone<-as.data.frame(as.table(Milestone))
+Milestone
+#Graphics
+pie(Milestone$Freq, main="Frequency of Tickets Milestone", label=Milestone$Var1, col = rainbow(7))
+
+
+
 #2.2 Var Reporter
+# Reporters are WordPress Community members who find and report a problem from WP Platform, into a Ticket.
 # Transform into table
 Reporter<-table(TicketW$Reporter) 
 Reporter<-as.data.frame(as.table(Reporter))
@@ -30,7 +59,7 @@ totalReporter<-nrow(Reporter)
 totalReporter
 Reporter[c(1:30),c(1:2)]
 
-#2.2.1 Filter the most active group of reporters
+#2.2.1 Filter the most active group of reporters.  
 ActiveReporters = filter(Reporter,Freq>10)
 totalAR<-nrow(ActiveReporters)
 totalAR #Total members of active reporters group
@@ -95,6 +124,7 @@ barplot(Ranklr$Freq[1:5],
 
 
 # 2.3 Var Owner
+# Owners are WordPress Community members who pick up a ticket from WP Platform (sended by a reporter) in order to solve it.
 # Transform into table
 Owner<-table(TicketW$Owner) 
 Owner<-as.data.frame(as.table(Owner))
@@ -176,7 +206,7 @@ WPCGroupO<-data.frame(CoreGroupO,MembersTotalO)
 print('Group Types of Owners')
 WPCGroupO
 
-par(mfrow=c(1,2))
+par(mfrow=c(2,2))
 barplot(WPCGroupR$MembersTotal,
         names.arg=WPCGroupR$MembersTotal,
         xlab="Reporter Groups",
@@ -184,16 +214,10 @@ barplot(WPCGroupR$MembersTotal,
         legend=WPCGroupR$CoreGroupR,
         col=rainbow(8),
         main="Reporters per Groups",border="red")
-
 barplot(WPCGroupO$MembersTotal,
         names.arg=WPCGroupO$MembersTotal,
         xlab="Owners Groups",
         ylab="Total Members",
         legend=WPCGroupO$CoreGroupO,
-        col=rainbow(8),
+        col=rainbow(4),
         main="Owners per Groups",border="red")
-
-
-
-
-

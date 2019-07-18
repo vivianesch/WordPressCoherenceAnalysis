@@ -38,13 +38,86 @@ TicketW[1:5,]  #5 fist lines
 summary(TicketW)
 glimpse(TicketW)
 
-#2.1 Var1
+#2. EXPLORATORY ANALYSIS - UNIAVARIABLE ANALYSIS
+# Goal - Find which variables have hight variability and a line of cut, in order to use into Bivariate Analysis
+dim(TicketW) #dimension
+TicketW[1:5,]  #5 fist lines
+summary(TicketW)
+glimpse(TicketW)
+
+#2.1 Variables related with members
+# Var1
 Status<-table(TicketW$Status)
-# Transform into table Var1
+# Transform into table
 Status<-as.data.frame(as.table(Status))
+Status
 #Graphics
-plot(Status, main="Status")
 pie(Status$Freq, main="Frequency of Tickets Status", label=Status$Var1, col = rainbow(7))
+
+#Var2
+TType<-table(TicketW$Type)
+# Transform into table
+TType<-as.data.frame(as.table(TType))
+TType
+#Graphics
+pie(TType$Freq, main="Frequency of Tickets Type", label=TType$Var1, col = rainbow(7))
+
+#Var3
+Priority<-table(TicketW$Priority)
+# Transform into table
+Priority<-as.data.frame(as.table(Priority))
+Priority
+#Graphics
+pie(Priority$Freq, main="Frequency of Tickets Priority", label=Priority$Var1, col = rainbow(7))
+
+#Var4
+Milestone<-table(TicketW$Milestone)
+# Transform into table
+Milestone<-as.data.frame(as.table(Milestone))
+Milestone
+#Graphics
+pie(Milestone$Freq, main="Frequency of Tickets Milestone", label=Milestone$Var1, col = rainbow(7))
+
+#Var5
+Component<-table(TicketW$Component)
+# Transform into table
+Component<-as.data.frame(as.table(Component))
+Component
+#Graphics
+barplot(Component$Freq, xlab = Component$Freq, ylab = Component$Var1, main="Frequency of Tickets Component",  col = rainbow(20))
+
+#Var6
+Severity<-table(TicketW$Severity)
+# Transform into table
+Severity<-as.data.frame(as.table(Severity))
+Severity
+#Graphics
+pie(Severity$Freq, main="Frequency of Tickets Severity", label=Severity$Var1, col = rainbow(7))
+
+#Var6
+Focuses<-table(TicketW$Focuses)
+# Transform into table
+Focuses<-as.data.frame(as.table(Focuses))
+Focuses
+#Graphics
+barplot(Focuses$Freq, xlab = Focuses$Freq, ylab = Focuses$Var1, main="Frequency of Tickets Focuses",  col = rainbow(20))
+
+#Var7
+Keywords<-table(TicketW$Keywords)
+# Transform into table
+Keywords<-as.data.frame(as.table(Keywords))
+Keywords
+#Graphics
+barplot(Keywords$Freq, xlab = Keywords$Freq, ylab = Keywords$Var1, main="Frequency of Tickets Keywords",  col = rainbow(20))
+
+```
+
+jjjj
+
+
+
+```{r}
+
 
 #2.2 Var Reporter
 # Transform into table
@@ -118,7 +191,11 @@ barplot(Ranklr$Freq[1:5],
         legend.text = Ranklr$Var1[1:5],
         args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Less acctive Reporters
 
+```
 
+
+
+```{r}
 # 2.3 Var Owner
 # Transform into table
 Owner<-table(TicketW$Owner) 
@@ -146,7 +223,6 @@ RankMO
 #Filter the less active group of Owners (Which Owner with less than 10 tickets)
 LessOwner = filter(Owner,Freq<4)
 totalLO<-nrow(LessOwner)
-
 
 #Ranking the less active Owners
 RanklO <- LessOwner[order(LessOwner$Freq, decreasing = TRUE),]
@@ -187,6 +263,10 @@ barplot(RanklO$Freq[1:5],
         legend.text = RanklO$Var1[1:5],
         args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Less Active Owners
 
+```
+
+
+```{r}
 #Total members per Reporter
 MembersTotalR<-c(totalReporter,totalAR,totalMR,totalLR)
 CoreGroupR<-c("Reporters","Active Reporters","Median Reporters","Alien Reporters")
@@ -219,4 +299,7 @@ barplot(WPCGroupO$MembersTotal,
         main="Owners per Groups",border="red")
 
 ```
+
+
+
 
