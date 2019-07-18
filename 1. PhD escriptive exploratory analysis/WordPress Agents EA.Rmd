@@ -23,8 +23,10 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+**1. EXPLORATORY ANALYSIS - UNIAVARIABLE ANALYSIS**
+
 ```{r}
-#1. READ DATA
+#READ DATA
 library(readr)
 library(dplyr)
 library(plotly)
@@ -32,19 +34,17 @@ library(googleVis)
 TicketW <- read_csv('~/PhD Analysis/1. PhD escriptive exploratory analysis/TicketW.csv')
 View(TicketW)
 
-#2. UNIAVARIABLE ANALYSIS
 dim(TicketW) #dimension
 TicketW[1:5,]  #5 fist lines
 summary(TicketW)
 glimpse(TicketW)
 
-#2. EXPLORATORY ANALYSIS - UNIAVARIABLE ANALYSIS
-# Goal - Find which variables have hight variability and a line of cut, in order to use into Bivariate Analysis
-dim(TicketW) #dimension
-TicketW[1:5,]  #5 fist lines
-summary(TicketW)
-glimpse(TicketW)
+```
 
+**1.1 Variables related with members**
+**Goal:** Find which variables have hight variability, and find a line of cut, in order to use into Bivariate Analysis.
+
+```{r}
 #2.1 Variables related with members
 # Var1
 Status<-table(TicketW$Status)
@@ -82,9 +82,18 @@ pie(Milestone$Freq, main="Frequency of Tickets Milestone", label=Milestone$Var1,
 Component<-table(TicketW$Component)
 # Transform into table
 Component<-as.data.frame(as.table(Component))
-Component
+c1<-Component[order(Component$Freq, decreasing = TRUE),]
+Component = filter(Component, Freq>100)
+sum(Component$Freq)
 #Graphics
-barplot(Component$Freq, xlab = Component$Freq, ylab = Component$Var1, main="Frequency of Tickets Component",  col = rainbow(20))
+barplot(Component$Freq, 
+        xlab = "Tickets", 
+        ylab = "Components", 
+        main="Frequency of Tickets Component", 
+        col = rainbow(5),
+        legend.text = Component$Var1,
+        horiz=TRUE,
+        args.legend = list("bottom", bty="n", cex = 1))
 
 #Var6
 Severity<-table(TicketW$Severity)
@@ -98,28 +107,52 @@ pie(Severity$Freq, main="Frequency of Tickets Severity", label=Severity$Var1, co
 Focuses<-table(TicketW$Focuses)
 # Transform into table
 Focuses<-as.data.frame(as.table(Focuses))
-Focuses
+f1<-Focuses[order(Focuses$Freq, decreasing = TRUE),]
+Focuses = filter(Focuses, Freq>10)
+sum(Focuses$Freq)
 #Graphics
-barplot(Focuses$Freq, xlab = Focuses$Freq, ylab = Focuses$Var1, main="Frequency of Tickets Focuses",  col = rainbow(20))
-
+barplot(Focuses$Freq, 
+        xlab = "Tickets", 
+        ylab = "Focuses", 
+        main="Frequency of Tickets Focuses", 
+        col = rainbow(13),
+        legend.text = Focuses$Var1,
+        horiz=TRUE,
+        args.legend = list("bottom", bty="n", cex = 1))
 #Var7
 Keywords<-table(TicketW$Keywords)
 # Transform into table
 Keywords<-as.data.frame(as.table(Keywords))
-Keywords
+k1<-Keywords[order(Keywords$Freq, decreasing = TRUE),]
+Keywords = filter(Keywords, Freq>9)
+Keywords = filter(Keywords, Freq>40)
+sum(Keywords$Freq)
 #Graphics
-barplot(Keywords$Freq, xlab = Keywords$Freq, ylab = Keywords$Var1, main="Frequency of Tickets Keywords",  col = rainbow(20))
+barplot(Keywords$Freq,
+        xlab = "Tickets", 
+        ylab = "Keywords", 
+        main="Frequency of Tickets Keywords", 
+        col = rainbow(13),
+        legend.text = Keywords$Var1,
+        horiz=TRUE,
+        args.legend = list("bottom", bty="n", cex = 1))
+
+
+
 
 ```
 
-jjjj
+
+**1.1 Conclusion:** Variables selected to bivariate analysis are Component(+100 tickets per level), Focuses (+1 Ticket per level), Keywords(+9 tickets per level).
 
 
 
+
+**1.2 Var Reporter:** Reporters are WordPress Community members who find and report a problem from WP Platform, into a Ticket.
+
+**Goal:** Find type of report member groups (actives, medians, and aliens), and find a line of cut, in order to use into Bivariate Analysis.
 ```{r}
 
-
-#2.2 Var Reporter
 # Transform into table
 Reporter<-table(TicketW$Reporter) 
 Reporter<-as.data.frame(as.table(Reporter))
@@ -128,7 +161,7 @@ totalReporter<-nrow(Reporter)
 totalReporter
 Reporter[c(1:30),c(1:2)]
 
-#2.2.1 Filter the most active group of reporters (Which reporter with more than 10 tickets)
+#1.2.1 Filter the most active group of reporters (Which reporter with more than 10 tickets)
 ActiveReporters = filter(Reporter,Freq>10)
 totalAR<-nrow(ActiveReporters)
 totalAR #Total members of active reporters group
@@ -138,7 +171,7 @@ RankAR #Ranking the most active reporters
 label<-names(summary(RankAR$Freq))
 summary(RankAR$Freq)
 
-#2.2.2 Filter the median active group of reporters (Which reporter with less than 10 tickets and more than 4 tickets)
+#1.2.2 Filter the median active group of reporters (Which reporter with less than 10 tickets and more than 4 tickets)
 MedianReporters = filter(Reporter,Freq<10 & Freq>4)
 totalMR<-nrow(MedianReporters)
 MedianReporters
@@ -191,12 +224,21 @@ barplot(Ranklr$Freq[1:5],
         legend.text = Ranklr$Var1[1:5],
         args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Less acctive Reporters
 
+
+
 ```
 
 
+**1.2 Conclusion:** Short group of reporter active members
 
+
+
+**1.3 Var Owner:** Owners are WordPress Community members who pick up a ticket from WP Platform (sended by a reporter) in order to solve it.
+
+
+**Goal:** Find type of owner member groups (actives, medians, and aliens), and find a line of cut, in order to use into Bivariate Analysis.
 ```{r}
-# 2.3 Var Owner
+# 1.3 Var Owner
 # Transform into table
 Owner<-table(TicketW$Owner) 
 Owner<-as.data.frame(as.table(Owner))
@@ -263,8 +305,16 @@ barplot(RanklO$Freq[1:5],
         legend.text = RanklO$Var1[1:5],
         args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Less Active Owners
 
+
+
 ```
 
+
+**1.3 Conclusion:** Short group of owner active members
+
+
+
+**1.4 Potential indicators:** 
 
 ```{r}
 #Total members per Reporter
@@ -298,8 +348,12 @@ barplot(WPCGroupO$MembersTotal,
         col=rainbow(8),
         main="Owners per Groups",border="red")
 
+
+
 ```
 
+
+**FINAL CONCLUSIONS:** 
 
 
 

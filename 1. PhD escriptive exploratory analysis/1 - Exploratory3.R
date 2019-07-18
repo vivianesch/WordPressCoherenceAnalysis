@@ -47,7 +47,64 @@ Milestone
 #Graphics
 pie(Milestone$Freq, main="Frequency of Tickets Milestone", label=Milestone$Var1, col = rainbow(7))
 
+#Var5
+Component<-table(TicketW$Component)
+# Transform into table
+Component<-as.data.frame(as.table(Component))
+c1<-Component[order(Component$Freq, decreasing = TRUE),]
+Component = filter(Component, Freq>100)
+sum(Component$Freq)
+#Graphics
+barplot(Component$Freq, 
+        xlab = "Tickets", 
+        ylab = "Components", 
+        main="Frequency of Tickets Component", 
+        col = rainbow(5),
+        legend.text = Component$Var1,
+        horiz=TRUE,
+        args.legend = list("bottom", bty="n", cex = 1))
 
+#Var6
+Severity<-table(TicketW$Severity)
+# Transform into table
+Severity<-as.data.frame(as.table(Severity))
+Severity
+#Graphics
+pie(Severity$Freq, main="Frequency of Tickets Severity", label=Severity$Var1, col = rainbow(7))
+
+#Var6
+Focuses<-table(TicketW$Focuses)
+# Transform into table
+Focuses<-as.data.frame(as.table(Focuses))
+f1<-Focuses[order(Focuses$Freq, decreasing = TRUE),]
+Focuses = filter(Focuses, Freq>10)
+sum(Focuses$Freq)
+#Graphics
+barplot(Focuses$Freq, 
+        xlab = "Tickets", 
+        ylab = "Focuses", 
+        main="Frequency of Tickets Focuses", 
+        col = rainbow(13),
+        legend.text = Focuses$Var1,
+        horiz=TRUE,
+        args.legend = list("bottom", bty="n", cex = 1))
+#Var7
+Keywords<-table(TicketW$Keywords)
+# Transform into table
+Keywords<-as.data.frame(as.table(Keywords))
+k1<-Keywords[order(Keywords$Freq, decreasing = TRUE),]
+Keywords = filter(Keywords, Freq>9)
+Keywords = filter(Keywords, Freq>40)
+sum(Keywords$Freq)
+#Graphics
+barplot(Keywords$Freq,
+        xlab = "Tickets", 
+        ylab = "Keywords", 
+        main="Frequency of Tickets Keywords", 
+        col = rainbow(13),
+        legend.text = Keywords$Var1,
+        horiz=TRUE,
+        args.legend = list("bottom", bty="n", cex = 1))
 
 #2.2 Var Reporter
 # Reporters are WordPress Community members who find and report a problem from WP Platform, into a Ticket.
@@ -108,7 +165,7 @@ barplot(RankMR$Freq[1:5],
         col=rainbow(5),
         main="Top 5 Median Reporters",
         border="blue",
-        legend.text = RankMR $Var1[1:5],
+        legend.text = RankMR$Var1[1:5],
         args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Median Reporters
 
 barplot(Ranklr$Freq[1:5],
