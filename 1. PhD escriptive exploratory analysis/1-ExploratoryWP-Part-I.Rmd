@@ -1,0 +1,416 @@
+---
+title: "WordPress Agents Exploratory Analysis- Part I- Univariate description"
+author: "Viviane Schneider"
+date: "09/07/2019"
+output: html_document
+---
+**Type of Analysis:** Descriptive analysis - Univariate description
+
+**Intention of Analysis**: 
+1- Understand how Core WordPress Community coproduce code.
+2- Identify potential indicators for coherence analysis.
+
+**General Question:** *Wich are the atributes of coproduction (colunms of dataframe or variables)?*
+**Specific Questions:** *Which type of developers groups exist in WC? It is possible to make some indicator from this data? *
+
+**Source:** Data come from WordPress Report Trac System.
+[URL Source](https://core.trac.wordpress.org/query?status=accepted&status=assigned&status=new&status=reopened&status=reviewing&col=id&col=summary&col=status&col=owner&col=type&col=priority&col=milestone&col=component&col=version&col=severity&col=resolution&col=time&col=changetime&col=focuses&col=reporter&col=keywords&order=priority)
+**Dataframe:** [GitHub Repository](https://raw.githubusercontent.com/vivianesch/CoherenceAnalysisWordPress/master/TicketW.csv)
+
+**Date collection:** 04/07/2019.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**1.GENERAL ANALYSIS**
+
+```{r}
+#READ DATA
+library(readr)
+library(dplyr)
+library(plotly)
+TicketW <- read_csv('~/PhD Analysis/1. PhD escriptive exploratory analysis/TicketW.csv')
+View(TicketW)
+dim(TicketW) #dimension
+TicketW[1:5,]  #5 fist lines
+summary(TicketW)
+glimpse(TicketW)
+
+```
+
+**1.1 Variables related with members Analysis**
+**Goal:** Find which variables have hight variability, and find a line of cut, in order to use into Bivariate Analysis.
+
+```{r}
+# Var1
+Status<-table(TicketW$Status)
+# Transform into table
+Status<-as.data.frame(as.table(Status))
+
+#Var2
+TType<-table(TicketW$Type)
+# Transform into table
+TType<-as.data.frame(as.table(TType))
+
+#Var3
+Priority<-table(TicketW$Priority)
+# Transform into table
+Priority<-as.data.frame(as.table(Priority))
+
+#Var4
+Milestone<-table(TicketW$Milestone)
+# Transform into table
+Milestone<-as.data.frame(as.table(Milestone))
+
+#Var5
+Component<-table(TicketW$Component)
+# Transform into table
+Component<-as.data.frame(as.table(Component))
+c1<-Component[order(Component$Freq, decreasing = TRUE),]
+Component = filter(Component, Freq>100)#Var5
+sum(Component$Freq)
+
+#Var6
+Severity<-table(TicketW$Severity)
+# Transform into table
+Severity<-as.data.frame(as.table(Severity))
+
+#Var7
+Focuses<-table(TicketW$Focuses)
+# Transform into table
+Focuses<-as.data.frame(as.table(Focuses))
+f1<-Focuses[order(Focuses$Freq, decreasing = TRUE),]
+Focuses = filter(Focuses, Freq>10)
+sum(Focuses$Freq)
+
+Keywords<-table(TicketW$Keywords)#Var8
+# Transform into table
+Keywords<-as.data.frame(as.table(Keywords))
+k1<-Keywords[order(Keywords$Freq, decreasing = TRUE),]
+Keywords = filter(Keywords, Freq>9)
+Keywords = filter(Keywords, Freq>40)
+sum(Keywords$Freq)
+
+```
+
+
+**1.2 Variable Members Analysis - Reporters:** Reporters are WordPress Community members who find and report a problem from WP Platform, into a Ticket.
+
+**Goal:** Find type of report member groups (actives, medians, and aliens), and find a line of cut, in order to use into Bivariate Analysis.
+```{r}
+
+# Transform into table
+Reporter<-table(TicketW$Reporter) 
+Reporter<-as.data.frame(as.table(Reporter))
+summary(Reporter)
+totalReporter<-nrow(Reporter)
+
+#1.2.1 Filter the most active group of reporters (Which reporter with more than 10 tickets)
+ActiveReporters = filter(Reporter,Freq>10)
+totalAR<-nrow(ActiveReporters) #Total members of active reporters group
+RankAR <- ActiveReporters[order(ActiveReporters$Freq, decreasing = TRUE),]
+summary(RankAR$Freq)
+
+#1.2.2 Filter the median active group of reporters (Which reporter with less than 10 tickets and more than 4 tickets)
+MedianReporters = filter(Reporter,Freq<10 & Freq>4)
+totalMR<-nrow(MedianReporters)
+#Ranking the Median active reporters
+RankMR <- MedianReporters[order(MedianReporters$Freq, decreasing = TRUE),]
+
+#1.2.3 Filter the less active group of Report (Which reporter with less than 10 tickets)
+LessReporters = filter(Reporter,Freq<4)
+totalLR<-nrow(LessReporters)
+#Ranking the less active Reporters
+Ranklr <- LessReporters[order(LessReporters$Freq, decreasing = TRUE),]
+
+```
+
+
+**1.3 Variable Member Analysis - Owners:** Owners are WordPress Community members who pick up a ticket from WP Platform (sended by a reporter) in order to solve it.
+
+
+**Goal:** Find type of owner member groups (actives, medians, and aliens), and find a line of cut, in order to use into Bivariate Analysis.
+```{r}
+# Transform into table
+Owner<-table(TicketW$Owner) 
+Owner<-as.data.frame(as.table(Owner))
+summary(Owner)
+totalOwner<-nrow(Owner)
+
+# 1.3.1 Filter the most active group of Owners (Which Owner with more than 10 tickets)
+ActiveOwner = filter(Owner,Freq>10)
+totalAO<-nrow(ActiveOwner)
+#Ranking the most active Owners
+RankAO <- ActiveOwner[order(ActiveOwner$Freq, decreasing = TRUE),]
+
+#1.3.2 Filter the median active group of Owners (Which Owner with less than 10 tickets and more than 4 tickets)
+MedianOwner = filter(Owner,Freq<10 & Freq>4)
+totalMO<-nrow(MedianOwner)
+#Ranking the Median Owners
+RankMO <- MedianOwner[order(MedianOwner$Freq, decreasing = TRUE),]
+
+#1.3.3 Filter the less active group of Owners (Which Owner with less than 10 tickets)
+LessOwner = filter(Owner,Freq<4)
+totalLO<-nrow(LessOwner)
+#Ranking the less active Owners
+RanklO <- LessOwner[order(LessOwner$Freq, decreasing = TRUE),]
+
+```
+
+
+**1.4 Sum of groups by Reporters and Owners:** 
+
+```{r}
+#Total members per Reporter
+MembersTotalR<-c(totalReporter,totalAR,totalMR,totalLR)
+CoreGroupR<-c("Reporters","Active Reporters","Median Reporters","Alien Reporters")
+PropMR<-prop.table(MembersTotalR)# Proportion
+WPCGroupR<-data.frame(CoreGroupR,MembersTotalR,PropMR)
+
+#Total members per Owner
+MembersTotalO<-c(totalOwner,totalAO,totalMO,totalLO)
+CoreGroupO<-c("Owners","Active Owners","Median Owners","Alien Owners")
+PropMO<-prop.table(MembersTotalR) #Proportion
+WPCGroupO<-data.frame(CoreGroupO,MembersTotalO,PropMO)
+
+```
+
+
+**2. DESCRIPTION ANALYSIS REPORT :** 
+
+**2.1  Variables related with members Report:** Variables selected to bivariate analysis are Component(+100 tickets per level), Focuses (+1 Ticket per level), Keywords(+9 tickets per level), Type, Status.
+
+```{r}
+
+Status#Var1
+#Graphics
+pie(Status$Freq, main="Frequency of Tickets Status", label=Status$Var1, col = rainbow(7))
+
+TType# Var2
+#Graphics
+pie(TType$Freq, main="Frequency of Tickets Type", label=TType$Var1, col = rainbow(7))
+
+Priority# Var3
+#Graphics
+pie(Priority$Freq, main="Frequency of Tickets Priority", label=Priority$Var1, col = rainbow(7))
+
+Milestone#Var4
+#Graphics
+pie(Milestone$Freq, main="Frequency of Tickets Milestone", label=Milestone$Var1, col = rainbow(7))
+
+Component#Var5
+#Graphics
+barplot(Component$Freq, 
+        xlab = "Tickets", 
+        ylab = "Components", 
+        main="Frequency of Tickets Component", 
+        col = rainbow(5),
+        legend.text = Component$Var1,
+        horiz=TRUE,
+        args.legend = list("bottom", bty="n", cex = 1))
+
+Severity #Var6
+#Graphics
+pie(Severity$Freq, main="Frequency of Tickets Severity", label=Severity$Var1, col = rainbow(7))
+
+Focuses#Var7
+#Graphics
+barplot(Focuses$Freq, 
+        xlab = "Tickets", 
+        ylab = "Focuses", 
+        main="Frequency of Tickets Focuses", 
+        col = rainbow(13),
+        legend.text = Focuses$Var1,
+        horiz=TRUE,
+       args.legend = list("bottom", bty="n", cex = 1))
+
+Keywords#Var8
+#Graphics
+barplot(Keywords$Freq,
+        xlab = "Tickets", 
+        ylab = "Keywords", 
+        main="Frequency of Tickets Keywords", 
+        col = rainbow(13),
+        legend.text = Keywords$Var1,
+        horiz=TRUE,
+        args.legend = list("bottom", bty="n", cex = 1))
+```
+
+
+
+**2.2 Reporter Members Analysis Report** The groups of Reporters:
+
+```{r}
+RankAR #Ranking the most active reporters
+RankMR #Ranking the Median active reporters
+Ranklr[c(1:30),c(1:2)] #Ranking the 30 less active Reporters
+
+#Grafic of Top 5 active Reporters
+par(mfrow=c(1,3))
+barplot(RankAR$Freq[1:5],
+        names.arg=RankAR$Var1[1:5],
+        horiz=TRUE,
+        xlab="Tickets per Reporter",
+        ylab="Reporters",
+        col=rainbow(5),
+        main="Top 5 active Reporters",
+        border="blue",
+        legend.text = RankAR$Var1[1:5],
+        args.legend = list("bottom", bty="n", cex = 0.8))#Top 5 Active Reporters
+
+barplot(RankMR$Freq[1:5],
+        names.arg=RankMR$Var1[1:5],
+        horiz=TRUE,
+        xlab="Tickets per Reporter",
+        ylab="Reporters",
+        col=rainbow(5),
+        main="Top 5 Median Reporters",
+        border="blue",
+        legend.text = RankMR $Var1[1:5],
+        args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Median Reporters
+
+barplot(Ranklr$Freq[1:5],
+        names.arg=Ranklr$Var1[1:5],
+        horiz=TRUE,
+        xlab="Tickets per Reporter",
+        ylab="Reporters",
+        col=rainbow(5),
+        main="Top 5 Alien Reporters",
+        border="blue",
+        legend.text = Ranklr$Var1[1:5],
+        args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Less acctive Reporters
+
+```
+
+
+**2.3 Owner Members Analysis Report:** The groups of Owners:
+
+```{r}
+
+RankAO#Ranking the most active Owners
+RankMO#Ranking the Median Owners
+RanklO[c(1:30),c(1:2)]#Ranking the 30 less active Owners
+
+#Grafic of Owners
+par(mfrow=c(1,3))
+barplot(RankAO$Freq[1:5],
+        names.arg=RankAO$Var1[1:5],
+        horiz=TRUE,
+        xlab="Tickets per owner",
+        ylab="Owners",
+        col=rainbow(5),
+        main="Top 5 active Owners",
+        border="blue",
+        legend.text = RankAO$Var1[1:5],
+        args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Active Owners
+
+barplot(RankMO$Freq[1:5],
+        names.arg=RankMO$Var1[1:5],
+        horiz=TRUE,
+        xlab="Tickets per owner",
+        ylab="Owners",
+        col=rainbow(5),
+        main="Top 5 median Owners",
+        border="blue",
+        legend.text = RankMO$Var1[1:5],
+        args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Median Owners
+
+barplot(RanklO$Freq[1:5],
+        names.arg=RanklO$Var1[1:5],
+        horiz=TRUE,
+        xlab="Tickets per owner",
+        ylab="Owners",
+        col=rainbow(5),
+        main="The 5 less active Owners",
+        border="blue",
+        legend.text = RanklO$Var1[1:5],
+        args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Less Active Owners
+
+```
+
+**2.4 Comparation of groups by Reporters and Owners:**
+
+```{r}
+WPCGroupR #Group Types of Reporters
+WPCGroupO #Group Types of Owners
+
+par(mfrow=c(1,2))
+barplot(WPCGroupR$MembersTotal,
+        names.arg=WPCGroupR$MembersTotal,
+        xlab="Reporter Groups",
+        ylab="Total Members",
+        legend=WPCGroupR$CoreGroupR,
+        col=rainbow(8),
+        main="Reporters per Groups",border="red")
+
+barplot(WPCGroupO$MembersTotal,
+        names.arg=WPCGroupO$MembersTotal,
+        xlab="Owners Groups",
+        ylab="Total Members",
+        legend=WPCGroupO$CoreGroupO,
+        col=rainbow(8),
+        main="Owners per Groups",border="red")
+
+```
+
+**3. FINAL CONCLUSIONS:** 
+
+        There are more Reporters than Owners. Maybe because to report a problem in the WorPress Platform is easear than fix a problem. There are a two members who can been consider the super active menbers of WP Community: SergeyBiryukov and johnbillion. SergeyBiryukov (number 1 of owners) was reponsable to 67 tickets, and also he report 15 Tickets (23o position of reporters). johnbillion (number 1 of owners) report 72 tickets, and also was responsable for 16 tickets (3o position of owners). 
+        Despite the most of ticket have no owner, there are not so many urgent issues.Thus this seems to be a normal dinamic of the groups. 
+        
+
+
+Owners
+
+##              Var1 Freq
+## 6  SergeyBiryukov   67
+## 2        audrasjb   18
+## 5     johnbillion   16
+## 3       chriscct7   15
+## 4       joemcgill   14
+## 1 adamsilverstein   13
+
+#                Var1 Freq
+## 14      johnbillion   72
+## 1           afercia   53
+## 15  johnjamesjacoby   47
+## 29 sebastian.pisula   43
+## 9          flixos90   42
+## 5   danielbachhuber   39
+## 16       karmatosed   33
+## 27           rmccue   27
+## 31 subrataemfluence   25
+## 34      westonruter   24
+## 21            nacin   23
+## 7           desrosj   22
+## 10  garrett-eclipse   22
+## 22           pbiron   22
+## 3            azaozz   21
+## 6              dd32   21
+## 4      boonebgorges   19
+## 23            pento   17
+## 26            ramiy   17
+## 28           scribu   17
+## 2           anevins   16
+## 8          dshanske   15
+## 11            helen   15
+## 13          iseulde   15
+## 18      markjaquith   15
+## 19        melchoyce   15
+## 30   SergeyBiryukov   15
+## 32       swissspidy   15
+## 33        tazotodua   15
+## 25        Presskopp   14
+## 12     henry.wright   13
+## 17           mark-k   12
+## 20         mukesh27   12
+## 24    peterwilsoncc   11
+
+```{r}
+
+# Kendal
+cor(WPCGroupO$MembersTotal, WPCGroupR$MembersTotal, method = "kendall")
+cor.test(WPCGroupO$MembersTotal, WPCGroupR$MembersTotal, method = "kendall")
+
+```

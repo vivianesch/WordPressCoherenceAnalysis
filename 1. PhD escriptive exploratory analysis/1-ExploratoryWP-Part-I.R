@@ -1,56 +1,26 @@
----
-title: "WordPress Agents Exploratory Analysis"
-author: "Viviane Schneider"
-date: "09/07/2019"
-output: html_document
----
-**Type of Analysis:** Descriptive analysis - Univariate description
-
-**Intention of Analysis**: 
-1- Understand how Core WordPress Community coproduce code.
-2- Identify potential indicators for coherence analysis.
-
-**General Question:** *Wich are the atributes of coproduction (colunms of dataframe or variables)?*
-**Specific Questions:** *Which type of developers groups exist in WC? It is possible to make some indicator from this data? *
-
-**Source:** Data come from WordPress Report Trac System.
-[URL Source](https://core.trac.wordpress.org/query?status=accepted&status=assigned&status=new&status=reopened&status=reviewing&col=id&col=summary&col=status&col=owner&col=type&col=priority&col=milestone&col=component&col=version&col=severity&col=resolution&col=time&col=changetime&col=focuses&col=reporter&col=keywords&order=priority)
-**Dataframe:** [GitHub Repository](https://raw.githubusercontent.com/vivianesch/CoherenceAnalysisWordPress/master/TicketW.csv)
-
-**Date collection:** 04/07/2019.
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-**1. EXPLORATORY ANALYSIS - UNIAVARIABLE ANALYSIS**
-
-```{r}
-#READ DATA
-library(readr)
 library(dplyr)
 library(plotly)
 library(googleVis)
+
+#READ DATA
+library(readr)
 TicketW <- read_csv('~/PhD Analysis/1. PhD escriptive exploratory analysis/TicketW.csv')
 View(TicketW)
 
+#1. EXPLORATORY ANALYSIS - UNIAVARIABLE ANALYSIS
+# Goal - Find which variables have hight variability and a line of cut, in order to use into Bivariate Analysis
 dim(TicketW) #dimension
 TicketW[1:5,]  #5 fist lines
 summary(TicketW)
 glimpse(TicketW)
 
-```
-
-**1.1 Variables related with members**
-**Goal:** Find which variables have hight variability, and find a line of cut, in order to use into Bivariate Analysis.
-
-```{r}
-#2.1 Variables related with members
+#1.1 Variables related with members
 # Var1
 Status<-table(TicketW$Status)
 # Transform into table
 Status<-as.data.frame(as.table(Status))
 Status
+prop.table(Status$Freq)
 #Graphics
 pie(Status$Freq, main="Frequency of Tickets Status", label=Status$Var1, col = rainbow(7))
 
@@ -137,22 +107,8 @@ barplot(Keywords$Freq,
         horiz=TRUE,
         args.legend = list("bottom", bty="n", cex = 1))
 
-
-
-
-```
-
-
-**1.1 Conclusion:** Variables selected to bivariate analysis are Component(+100 tickets per level), Focuses (+1 Ticket per level), Keywords(+9 tickets per level).
-
-
-
-
-**1.2 Var Reporter:** Reporters are WordPress Community members who find and report a problem from WP Platform, into a Ticket.
-
-**Goal:** Find type of report member groups (actives, medians, and aliens), and find a line of cut, in order to use into Bivariate Analysis.
-```{r}
-
+#1.2 Var Reporter
+# Reporters are WordPress Community members who find and report a problem from WP Platform, into a Ticket.
 # Transform into table
 Reporter<-table(TicketW$Reporter) 
 Reporter<-as.data.frame(as.table(Reporter))
@@ -161,7 +117,7 @@ totalReporter<-nrow(Reporter)
 totalReporter
 Reporter[c(1:30),c(1:2)]
 
-#1.2.1 Filter the most active group of reporters (Which reporter with more than 10 tickets)
+#1.2.1 Filter the most active group of reporters.  
 ActiveReporters = filter(Reporter,Freq>10)
 totalAR<-nrow(ActiveReporters)
 totalAR #Total members of active reporters group
@@ -171,7 +127,7 @@ RankAR #Ranking the most active reporters
 label<-names(summary(RankAR$Freq))
 summary(RankAR$Freq)
 
-#1.2.2 Filter the median active group of reporters (Which reporter with less than 10 tickets and more than 4 tickets)
+#1.2.2 Filter the median active group of reporters
 MedianReporters = filter(Reporter,Freq<10 & Freq>4)
 totalMR<-nrow(MedianReporters)
 MedianReporters
@@ -181,7 +137,7 @@ totalMR
 RankMR <- MedianReporters[order(MedianReporters$Freq, decreasing = TRUE),]
 RankMR
 
-#Filter the less active group of Report (Which reporter with less than 10 tickets)
+#Filter the less active group of Report
 LessReporters = filter(Reporter,Freq<4)
 totalLR<-nrow(LessReporters)
 
@@ -210,7 +166,7 @@ barplot(RankMR$Freq[1:5],
         col=rainbow(5),
         main="Top 5 Median Reporters",
         border="blue",
-        legend.text = RankMR $Var1[1:5],
+        legend.text = RankMR$Var1[1:5],
         args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Median Reporters
 
 barplot(Ranklr$Freq[1:5],
@@ -225,20 +181,8 @@ barplot(Ranklr$Freq[1:5],
         args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Less acctive Reporters
 
 
-
-```
-
-
-**1.2 Conclusion:** Short group of reporter active members
-
-
-
-**1.3 Var Owner:** Owners are WordPress Community members who pick up a ticket from WP Platform (sended by a reporter) in order to solve it.
-
-
-**Goal:** Find type of owner member groups (actives, medians, and aliens), and find a line of cut, in order to use into Bivariate Analysis.
-```{r}
-# 1.3 Var Owner
+#1.3 Var Owner
+# Owners are WordPress Community members who pick up a ticket from WP Platform (sended by a reporter) in order to solve it.
 # Transform into table
 Owner<-table(TicketW$Owner) 
 Owner<-as.data.frame(as.table(Owner))
@@ -246,7 +190,7 @@ Owner[c(1:30),c(1:2)]
 summary(Owner)
 totalOwner<-nrow(Owner)
 
-# Filter the most active group of Owners (Which Owner with more than 10 tickets)
+# Filter the most active group of Owners
 ActiveOwner = filter(Owner,Freq>10)
 totalAO<-nrow(ActiveOwner)
 
@@ -254,7 +198,7 @@ totalAO<-nrow(ActiveOwner)
 RankAO <- ActiveOwner[order(ActiveOwner$Freq, decreasing = TRUE),]
 RankAO
 
-#Filter the median active group of Owners (Which Owner with less than 10 tickets and more than 4 tickets)
+#Filter the median active group of Owners
 MedianOwner = filter(Owner,Freq<10 & Freq>4)
 totalMO<-nrow(MedianOwner)
 
@@ -262,9 +206,10 @@ totalMO<-nrow(MedianOwner)
 RankMO <- MedianOwner[order(MedianOwner$Freq, decreasing = TRUE),]
 RankMO
 
-#Filter the less active group of Owners (Which Owner with less than 10 tickets)
+#Filter the less active group of Owners
 LessOwner = filter(Owner,Freq<4)
 totalLO<-nrow(LessOwner)
+
 
 #Ranking the less active Owners
 RanklO <- LessOwner[order(LessOwner$Freq, decreasing = TRUE),]
@@ -305,33 +250,24 @@ barplot(RanklO$Freq[1:5],
         legend.text = RanklO$Var1[1:5],
         args.legend = list("bottom", bty="n", cex = 0.7))#Top 5 Less Active Owners
 
-
-
-```
-
-
-**1.3 Conclusion:** Short group of owner active members
-
-
-
-**1.4 Potential indicators:** 
-
-```{r}
+#1.4 Sum of groups by Reporters and Owners
 #Total members per Reporter
 MembersTotalR<-c(totalReporter,totalAR,totalMR,totalLR)
 CoreGroupR<-c("Reporters","Active Reporters","Median Reporters","Alien Reporters")
-WPCGroupR<-data.frame(CoreGroupR,MembersTotalR)
+PropMR<-prop.table(MembersTotalR)
+WPCGroupR<-data.frame(CoreGroupR,MembersTotalR,PropMR)
 print('Group Types of Reporters')
 WPCGroupR
 
 #Total members per Owner
 MembersTotalO<-c(totalOwner,totalAO,totalMO,totalLO)
 CoreGroupO<-c("Owners","Active Owners","Median Owners","Alien Owners")
-WPCGroupO<-data.frame(CoreGroupO,MembersTotalO)
+PropMO<-prop.table(MembersTotalO)
+WPCGroupO<-data.frame(CoreGroupO,MembersTotalO,PropMO)
 print('Group Types of Owners')
 WPCGroupO
 
-par(mfrow=c(1,2))
+par(mfrow=c(2,2))
 barplot(WPCGroupR$MembersTotal,
         names.arg=WPCGroupR$MembersTotal,
         xlab="Reporter Groups",
@@ -339,21 +275,15 @@ barplot(WPCGroupR$MembersTotal,
         legend=WPCGroupR$CoreGroupR,
         col=rainbow(8),
         main="Reporters per Groups",border="red")
-
 barplot(WPCGroupO$MembersTotal,
         names.arg=WPCGroupO$MembersTotal,
         xlab="Owners Groups",
         ylab="Total Members",
         legend=WPCGroupO$CoreGroupO,
-        col=rainbow(8),
+        col=rainbow(4),
         main="Owners per Groups",border="red")
 
-
-
-```
-
-
-**FINAL CONCLUSIONS:** 
-
-
-
+#1.5 Potential indicators
+# Kendal
+cor(WPCGroupO$MembersTotal, WPCGroupR$MembersTotal, method = "kendall")
+cor.test(WPCGroupO$MembersTotal, WPCGroupR$MembersTotal, method = "kendall")
