@@ -39,6 +39,8 @@ glimpse(TicketW)
 
 ```
 
+
+
 **1.1 Variables related with members Analysis**
 **Goal:** Find which variables have hight variability, and find a line of cut, in order to use into Bivariate Analysis.
 
@@ -47,34 +49,48 @@ glimpse(TicketW)
 Status<-table(TicketW$Status)
 # Transform into table
 Status<-as.data.frame(as.table(Status))
+PropStatus<-prop.table(Status$Freq) #Proportion
+Status<-data.frame(Status,PropStatus)
 
 #Var2
 TType<-table(TicketW$Type)
 # Transform into table
 TType<-as.data.frame(as.table(TType))
+PropTType<-prop.table(TType$Freq) #Proportion
+TType<-data.frame(TType,PropTType)
 
 #Var3
 Priority<-table(TicketW$Priority)
 # Transform into table
 Priority<-as.data.frame(as.table(Priority))
+PropPrio<-prop.table(Priority$Freq) #Proportion
+Priority<-data.frame(Priority,PropPrio)
 
 #Var4
 Milestone<-table(TicketW$Milestone)
 # Transform into table
 Milestone<-as.data.frame(as.table(Milestone))
+PropMiles<-prop.table(Milestone$Freq) #Proportion
+Milestone<-data.frame(Milestone,PropMiles)
+
 
 #Var5
 Component<-table(TicketW$Component)
 # Transform into table
 Component<-as.data.frame(as.table(Component))
 c1<-Component[order(Component$Freq, decreasing = TRUE),]
-Component = filter(Component, Freq>100)#Var5
+Component = filter(Component, Freq>100)
 sum(Component$Freq)
+PropComp<-prop.table(Component$Freq) #Proportion
+Component<-data.frame(Component,PropComp)
+
 
 #Var6
 Severity<-table(TicketW$Severity)
 # Transform into table
 Severity<-as.data.frame(as.table(Severity))
+PropSever<-prop.table(Severity$Freq) #Proportion
+Severity<-data.frame(Severity,PropSever)
 
 #Var7
 Focuses<-table(TicketW$Focuses)
@@ -82,6 +98,8 @@ Focuses<-table(TicketW$Focuses)
 Focuses<-as.data.frame(as.table(Focuses))
 f1<-Focuses[order(Focuses$Freq, decreasing = TRUE),]
 Focuses = filter(Focuses, Freq>10)
+PropFocus<-prop.table(Focuses$Freq) #Proportion
+Focuses<-data.frame(Focuses,PropFocus)
 sum(Focuses$Freq)
 
 Keywords<-table(TicketW$Keywords)#Var8
@@ -90,6 +108,8 @@ Keywords<-as.data.frame(as.table(Keywords))
 k1<-Keywords[order(Keywords$Freq, decreasing = TRUE),]
 Keywords = filter(Keywords, Freq>9)
 Keywords = filter(Keywords, Freq>40)
+Prop.Keyw<-prop.table(Keywords$Freq) #Proportion
+Keywords<-data.frame(Keywords,Prop.Keyw)
 sum(Keywords$Freq)
 
 ```
@@ -356,61 +376,15 @@ barplot(WPCGroupO$MembersTotal,
 
 **3. FINAL CONCLUSIONS:** 
 
-        There are more Reporters than Owners. Maybe because to report a problem in the WorPress Platform is easear than fix a problem. There are a two members who can been consider the super active menbers of WP Community: SergeyBiryukov and johnbillion. SergeyBiryukov (number 1 of owners) was reponsable to 67 tickets, and also he report 15 Tickets (23o position of reporters). johnbillion (number 1 of owners) report 72 tickets, and also was responsable for 16 tickets (3o position of owners). 
-        Despite the most of ticket have no owner, there are not so many urgent issues.Thus this seems to be a normal dinamic of the groups. 
-        
+There are more Reporters than Owners. Maybe because to report a problem in the WorPress Platform is easear than fix a problem. There are a two members who can been consider the super active menbers of WP Community: SergeyBiryukov and johnbillion. SergeyBiryukov (number 1 of owners) was reponsable to 67 tickets, and also he report 15 Tickets (23o position of reporters). johnbillion (number 1 of owners) report 72 tickets, and also was responsable for 16 tickets (3o position of owners). 
 
+Despite the most of ticket have no owner, there are not so many urgent issues. Aroud 93% of tickets are classified as Severity "normal", and 97% are classified as Priority "Normal". According with this description, are recommended analyse in a bivariable analysis the folow variables and levels:
 
-Owners
+* Variables for setup a referential of the community (The "Referentiality" Dimension): Documentation of values, general view and beiefs of community
 
-##              Var1 Freq
-## 6  SergeyBiryukov   67
-## 2        audrasjb   18
-## 5     johnbillion   16
-## 3       chriscct7   15
-## 4       joemcgill   14
-## 1 adamsilverstein   13
+* Variables for analyse the "Prescritivity" dimension: Analyse the community referential with  "Focuses" Variable, in order to verify if the members produced what they stablished into referential. 
 
-#                Var1 Freq
-## 14      johnbillion   72
-## 1           afercia   53
-## 15  johnjamesjacoby   47
-## 29 sebastian.pisula   43
-## 9          flixos90   42
-## 5   danielbachhuber   39
-## 16       karmatosed   33
-## 27           rmccue   27
-## 31 subrataemfluence   25
-## 34      westonruter   24
-## 21            nacin   23
-## 7           desrosj   22
-## 10  garrett-eclipse   22
-## 22           pbiron   22
-## 3            azaozz   21
-## 6              dd32   21
-## 4      boonebgorges   19
-## 23            pento   17
-## 26            ramiy   17
-## 28           scribu   17
-## 2           anevins   16
-## 8          dshanske   15
-## 11            helen   15
-## 13          iseulde   15
-## 18      markjaquith   15
-## 19        melchoyce   15
-## 30   SergeyBiryukov   15
-## 32       swissspidy   15
-## 33        tazotodua   15
-## 25        Presskopp   14
-## 12     henry.wright   13
-## 17           mark-k   12
-## 20         mukesh27   12
-## 24    peterwilsoncc   11
+* Variables for analyse the "Sense of Unity" dimension: "Keywords"  Variable, in order to verify the correlation with groups 
 
-```{r}
+* Variables for analyse the  the "Receptivity" dimension: Groups of members, correlation between groups and Status, Type, Milestone variables
 
-# Kendal
-cor(WPCGroupO$MembersTotal, WPCGroupR$MembersTotal, method = "kendall")
-cor.test(WPCGroupO$MembersTotal, WPCGroupR$MembersTotal, method = "kendall")
-
-```

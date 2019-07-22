@@ -1,6 +1,6 @@
+library(readr)
 library(dplyr)
 library(plotly)
-library(googleVis)
 
 #READ DATA
 library(readr)
@@ -73,7 +73,7 @@ Severity
 #Graphics
 pie(Severity$Freq, main="Frequency of Tickets Severity", label=Severity$Var1, col = rainbow(7))
 
-#Var6
+#Var7
 Focuses<-table(TicketW$Focuses)
 # Transform into table
 Focuses<-as.data.frame(as.table(Focuses))
@@ -88,8 +88,9 @@ barplot(Focuses$Freq,
         col = rainbow(13),
         legend.text = Focuses$Var1,
         horiz=TRUE,
-        args.legend = list("bottom", bty="n", cex = 1))
-#Var7
+       args.legend = list("bottom", bty="n", cex = 1))
+
+#Var8
 Keywords<-table(TicketW$Keywords)
 # Transform into table
 Keywords<-as.data.frame(as.table(Keywords))
