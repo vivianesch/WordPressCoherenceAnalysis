@@ -1,4 +1,4 @@
-#2. Biavariable analysis
+#2. Bivariable analysis
 #2.1 Anal
 
 CompType<-table(TicketW$Component,TicketW$Type)

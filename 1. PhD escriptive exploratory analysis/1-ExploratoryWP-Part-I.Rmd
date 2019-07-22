@@ -191,8 +191,9 @@ WPCGroupR<-data.frame(CoreGroupR,MembersTotalR,PropMR)
 #Total members per Owner
 MembersTotalO<-c(totalOwner,totalAO,totalMO,totalLO)
 CoreGroupO<-c("Owners","Active Owners","Median Owners","Alien Owners")
-PropMO<-prop.table(MembersTotalR) #Proportion
+PropMO<-prop.table(MembersTotalO) #Proportion
 WPCGroupO<-data.frame(CoreGroupO,MembersTotalO,PropMO)
+
 
 ```
 
@@ -372,13 +373,41 @@ barplot(WPCGroupO$MembersTotal,
         col=rainbow(8),
         main="Owners per Groups",border="red")
 
+
 ```
 
-**3. FINAL CONCLUSIONS:** 
+**3. POTENTIAL INDICATORS:** 
 
-There are more Reporters than Owners. Maybe because to report a problem in the WorPress Platform is easear than fix a problem. There are a two members who can been consider the super active menbers of WP Community: SergeyBiryukov and johnbillion. SergeyBiryukov (number 1 of owners) was reponsable to 67 tickets, and also he report 15 Tickets (23o position of reporters). johnbillion (number 1 of owners) report 72 tickets, and also was responsable for 16 tickets (3o position of owners). 
+* The "Sense of Unity" Dimension indicator: 
+  *  Mode_Agents_Rules: In a scale from O to 1, this indicator represents the principals rules the WP members play in the community: active, median and alien. This unformal rules are observed into formal groups: owners and reporters. The Hypothesis is  that the Reporters Group and the Owners Group have a similar distribution of tickets per its the respectives sub groups(active, median, and alien).
+  
+Hypothesis: $PropMo = PropMR$
 
-Despite the most of ticket have no owner, there are not so many urgent issues. Aroud 93% of tickets are classified as Severity "normal", and 97% are classified as Priority "Normal". According with this description, are recommended analyse in a bivariable analysis the folow variables and levels:
+Means: percentual of tickets into any subgroups into Owner Groups are similar thand percentual of tickets into any subgroups into Reporter Groups
+
+  Where 
+    PropMo is the proportion of tickets per active, median, and alien groups of Owners, and
+    PropMR is the proportion of tickets per active, median, and alien groups of Reporters.
+    
+Hypothesis test: 
+
+```{r}
+similarityOR<-ifelse(PropMO>PropMR,1-(PropMO-PropMR),1-(PropMR-PropMO))
+similarityOR<-mean(similarityOR)
+similarityOR
+```
+
+Thus, Mode_Agents_Rules indicator is = similarityOR. 
+
+**4. FINAL CONCLUSIONS:** 
+
+There are more Reporters than Owners. Maybe because to report a problem in the WorPress Platform is easear than fix a problem. There are a two members, who can been considers the super active menbers of WP Community: SergeyBiryukov and johnbillion. SergeyBiryukov (number 1 of owners) was reponsable to 67 tickets, and also he report 15 Tickets (23o position of reporters). johnbillion (number 1 of owners) reports 72 tickets, and also was responsable for 16 tickets (3o position of owners). 
+
+The hypothesis test proof (result: 0.9772515) indicates that there are a strong coesion into formals groups of core: owners and reporters.
+
+Despite the most of tickets have no owner, there are not so many urgent issues. Around 93% of tickets are classified as Severity "normal", and 97% are classified as Priority "Normal". 
+
+According with this description, are recommended analyse in a bivariable description the folow variables:
 
 * Variables for setup a referential of the community (The "Referentiality" Dimension): Documentation of values, general view and beiefs of community
 
@@ -387,4 +416,3 @@ Despite the most of ticket have no owner, there are not so many urgent issues. A
 * Variables for analyse the "Sense of Unity" dimension: "Keywords"  Variable, in order to verify the correlation with groups 
 
 * Variables for analyse the  the "Receptivity" dimension: Groups of members, correlation between groups and Status, Type, Milestone variables
-
