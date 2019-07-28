@@ -1,37 +1,61 @@
-#2. Bivariable analysis
-#2.1 Anal
+library(readr)
+install.packages("dplyr")
+library(dplyr)
+library(plotly)
+library(markdown)
+library(ggplot2)
+library(lattice)
 
-CompType<-table(TicketW$Component,TicketW$Type)
 
-panel.hist <- function(x, ...)
-{
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(usr[1:2], 0, 1.5) )
-  h <- hist(x, plot = FALSE)
-  breaks <- h$breaks; nB <- length(breaks)
-  y <- h$counts; y <- y/max(y)
-  rect(breaks[-nB], 0, breaks[-1], y, col = "cyan", ...)
-}
+TicketW <- read_csv('~/PhD Analysis/1. PhD escriptive exploratory analysis/TicketW.csv')
+View(TicketW) # Read 
+glimpse(TicketW)
 
-panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...)
-{
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(0, 1, 0, 1))
-  r <- abs(cor(x, y))
-  txt <- format(c(r, 0.123456789), digits = digits)[1]
-  txt <- paste0(prefix, txt)
-  if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
-  text(0.5, 0.5, txt, cex = cex.cor * r)
-}
+
+
+#Bivariable analysis
+
+#1. Analyse Reporters and Keywords data
+
+#1.1 Analyse Keywords used for Active reporters
+Reporter_Keywords<- TicketW %>% select(Reporter,Keywords) #Table of Reporters and Keywords
+summary(Reporter_Keywords)
+dim(Reporter_Keywords)
+glimpse(Reporter_Keywords)
+rownames(Reporter_Keywords)
+colnames(Reporter_Keywords)
+
+nrow(ActiveReporters)
+nrow #Quantity of Active Reporters
+AR<-ActiveReporters[1:34,1:1] #Select array of active reporters names to filter 
+AR<-as.character(AR) #Transform filter into caracter
+
+ActiveR_Key = subset(Reporter_Keywords, Reporter_Keywords$Reporter %in% AR) 
+ActiveR_Key<-table(ActiveR_Key$Keywords,ActiveR_Key$Reporter)
+dim(ActiveR_Key)
+glimpse(ActiveR_Key)
+rownames(ActiveR_Key)
+colnames(ActiveR_Key)
+
+
+
+
+
 
 pairs(CompType, diag.panel = panel.hist, upper.panel = panel.cor)
-
 CompType<-table(TicketW$Component)
 
 pairs(CompType, diag.panel = panel.hist, upper.panel = panel.cor)
-
 CompStatus<-table(TicketW$Component,TicketW$Status)
 
-pairs(CompStatus, diag.panel = panel.hist, upper.panel = panel.cor)
+
+        
+        
+        
+        
+        
+    
+   
+
 
 
