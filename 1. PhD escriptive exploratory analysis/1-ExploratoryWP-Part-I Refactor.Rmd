@@ -1,0 +1,366 @@
+---
+title: "WordPress Agents Exploratory Analysis- Part I- Univariate description - Refactored"
+author: "Viviane Schneider"
+date: "08/01/2019"
+output: html_document
+---
+**Type of Analysis:** Descriptive analysis - Univariate description
+
+**Intention of Analysis**: 
+1- Understand how Core WordPress Community coproduce code.
+2- Identify potential indicators for coherence analysis.
+
+**General Question:** *Wich are the atributes of coproduction (colunms of dataframe or variables)?*
+**Specific Questions:** *Which type of developers groups exist in WC? It is possible to make some indicator from this data? *
+
+**Source:** Data come from WordPress Report Trac System.
+[URL Source](https://core.trac.wordpress.org/query?status=accepted&status=assigned&status=new&status=reopened&status=reviewing&col=id&col=summary&col=status&col=owner&col=type&col=priority&col=milestone&col=component&col=version&col=severity&col=resolution&col=time&col=changetime&col=focuses&col=reporter&col=keywords&order=priority)
+**Dataframe:** [GitHub Repository](https://raw.githubusercontent.com/vivianesch/CoherenceAnalysisWordPress/master/TicketW.csv)
+
+**Date collection:** 04/07/2019.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**1.GENERAL ANALYSIS**
+
+```{r}
+#READ DATA
+library(readr)
+library(dplyr)
+library(plotly)
+TicketW <- read_csv('~/PhD Analysis/1. PhD escriptive exploratory analysis/TicketW.csv')
+View(TicketW)
+dim(TicketW) #dimension
+TicketW[1:5,]  #5 fist lines
+summary(TicketW)
+glimpse(TicketW)
+
+```
+
+
+**Function unianalysis() - Transform vector into a data frame with frequency of levels and proportion**
+
+```{r}
+# Transform vector into a data frame with frequency of levels and proportion
+unianalysis = function (x) {
+        
+        y<-table(x)
+        y<-as.data.frame(as.table(y))
+        general_prop<-prop.table(y$Freq) #Proportion
+        y<-data.frame(y, general_prop) 
+        return(y)
+}
+
+```
+
+**1.1 Variables related with members Analysis**
+**Goal:** Find which variables have hight variability, and find a line of cut, in order to use into Bivariate Analysis.
+
+```{r}
+
+# Var1
+Status<-unianalysis(TicketW$Status)
+
+#Var2
+TType<-unianalysis(TicketW$Type)
+
+#Var3
+Priority<-unianalysis(TicketW$Priority)
+
+#Var4
+Milestone<-unianalysis(TicketW$Milestone)
+
+#Var5
+Component<-unianalysis(TicketW$Component) 
+Component = filter(Component, Freq>100) # Filter components with more than 100 tickets
+sum(Component$Freq) #Total Tickets into most frequent components (more than 100 tickets)
+
+#Var6
+Severity<-unianalysis(TicketW$Severity)
+
+#Var7
+Focuses<-unianalysis(TicketW$Focuses)
+Focuses = filter(Focuses, Freq>10) # Filter Focuses with more than 10 tickets
+Focuses<-Focuses[order(Focuses$Freq, decreasing = TRUE),]
+sum(Focuses$Freq) #Total Tickets into most frequent components (more than 100 tickets)
+
+#Var8
+Keywords<-unianalysis(TicketW$Keywords)
+Keywords = filter(Keywords, Freq>8)
+Keywords<-Keywords[order(Keywords$Freq, decreasing = TRUE),]
+sum(Keywords$Freq)
+
+
+```
+
+
+**Functions for establish groups of active (GroupActive()), median (GroupMedian()), or less active (GroupAlien()) members: **
+
+```{r}
+
+#1. Filter the most active group of reporters (Which reporter with more than 10 tickets) 
+    GroupActive = function(x) {
+        y = filter(x, Freq>10)
+        x <- y[order(y$Freq, decreasing = TRUE),]
+        group_prop<-prop.table(x$Freq) #Proportion
+        x<-data.frame(x,group_prop) 
+        return(x)
+    }
+#2. Filter the median active group
+    GroupMedian = function(x) {
+        y = filter(x, Freq<10 & Freq>4)
+        x <- y[order(y$Freq, decreasing = TRUE),]
+        group_prop<-prop.table(x$Freq) #Proportion
+        x<-data.frame(x,group_prop)
+        return(x)
+    }  
+#3. Filter the less active group 
+     GroupAlien = function(x) {
+        y = filter(x, Freq<4)
+        group_prop<-prop.table(x$Freq) #Proportion
+        x<-data.frame(x,group_prop)
+        x <- y[order(y$Freq, decreasing = TRUE),]
+        return(x)
+     }
+     
+```
+ 
+**1.2 Variable Members Analysis - Reporters:** Reporters are WordPress Community members who find and report a problem from WP Platform, into a Ticket.
+
+**Goal:** Find type of report member groups (actives, medians, and aliens), and find a line of cut, in order to use into Bivariate Analysis.
+     
+```{r}
+#Find Groups and quantity of people for each group
+             
+Reporter<-unianalysis(TicketW$Reporter) 
+totalReporter<-nrow(Reporter)
+
+ActiveReporters<-GroupActive(Reporter)
+totalAR<-nrow(ActiveReporters)
+
+MedianReporters<-GroupMedian(Reporter)
+totalMR<-nrow(MedianReporters)
+
+LessReporters<-GroupAlien(Reporter)
+totalLR<-nrow(LessReporters)
+
+```
+
+
+**1.3 Variable Member Analysis - Owners:** Owners are WordPress Community members who pick up a ticket from WP Platform (sended by a reporter) in order to solve it.
+
+
+**Goal:** Find type of owner member groups (actives, medians, and aliens), and find a line of cut, in order to use into Bivariate Analysis.
+```{r}
+Owner<-unianalysis(TicketW$Owner) 
+totalOwner<-nrow(Owner)
+
+#Find Groups and quantity of people for each group
+             
+ActiveOwner<-GroupActive(Owner)
+totalAO<-nrow(ActiveOwner)
+
+MedianOwner<-GroupMedian(Owner)
+totalMO<-nrow(MedianOwner)
+
+LessOwner<-GroupAlien(Owner)
+totalLO<-nrow(LessOwner)
+
+```
+
+
+**1.4 Sum of groups by Reporters and Owners:** 
+
+```{r}
+#Total members per Reporter
+MembersTotalR<-c(totalReporter,totalAR,totalMR,totalLR)
+CoreGroupR<-c("Reporters","Active Reporters","Median Reporters","Alien Reporters")
+PropMR<-prop.table(MembersTotalR)# Proportion
+WPCGroupR<-data.frame(CoreGroupR,MembersTotalR,PropMR)
+
+#Total members per Owner
+MembersTotalO<-c(totalOwner,totalAO,totalMO,totalLO)
+CoreGroupO<-c("Owners","Active Owners","Median Owners","Alien Owners")
+PropMO<-prop.table(MembersTotalO) #Proportion
+WPCGroupO<-data.frame(CoreGroupO,MembersTotalO,PropMO)
+
+```
+
+
+**2. DESCRIPTION ANALYSIS REPORT :** 
+
+**2.1  Variables related with members Report:** Variables selected to bivariate analysis are Component(+100 tickets per level), Focuses (+1 Ticket per level), Keywords(+9 tickets per level), Type, Status.
+
+```{r}
+
+Status#Var1
+#Graphics
+pie(Status$Freq, main="Frequency of Tickets Status", label=Status$x, col = rainbow(7))
+
+TType# Var2
+#Graphics
+pie(TType$Freq, main="Frequency of Tickets Type", label=TType$x, col = rainbow(7))
+
+Priority# Var3
+#Graphics
+barplot(Priority$Freq, las = 2, names.arg = Priority$x,
+        col =rainbow(7), main ="Frequency of Tickets Priority",
+        ylab = "Priority frequency")
+
+Milestone#Var4
+#Graphics
+barplot(Milestone$Freq, las = 2, names.arg = Milestone$x,
+        col =rainbow(7), main ="Frequency of Tickets Milestone",
+        ylab = "Milestone frequency")
+
+Component#Var5
+#Graphics
+barplot(Component$Freq, las = 2, names.arg = Component$x,
+        col = "aquamarine", main ="Most frequent Components",
+        ylab = "Component frequencies")
+
+Severity #Var6
+#Graphics
+barplot(Severity$Freq, las = 2, names.arg = Severity$x,
+        col = rainbow(7), main ="Frequency of Tickets Severity",
+        ylab = "Severity frequencies")
+
+Focuses#Var7
+#Graphics
+barplot(Focuses$Freq, las = 2, names.arg = Focuses$x,
+        col ="lightblue", main ="Frequency of Tickets Focuses",
+        ylab = "Focuses frequencies")
+
+Keywords#Var8
+#Graphics
+barplot(Keywords$Freq, las = 2, names.arg = Keywords$x,
+        col ="orangered", main ="Frequency of Tickets Keywords",
+        ylab = "Keywords frequencies")
+
+```
+
+
+
+**2.2 Reporter Members Analysis Report** The groups of Reporters:
+
+```{r}
+ActiveReporters #Ranking the most active reporters
+MedianReporters #Ranking the Median active reporters
+LessReporters[c(1:30),c(1:2)] #Ranking the 30 less active Reporters
+
+#Grafic of Top 5 active Reporters
+par(mfrow=c(1,3))
+barplot(ActiveReporters$Freq[1:5], las = 2, names.arg = ActiveReporters$x[1:5],
+        col ="navyblue", main ="Top 5 active Reporters",
+        ylab = "Tickets per Reporter")
+
+#Top 5 Median Reporters
+barplot(MedianReporters$Freq[1:5], las = 2, names.arg = MedianReporters$x[1:5], 
+        col ="orange4", main ="Top 5 median Reporters",
+        ylab = "Tickets per Reporter")
+
+#Top 5 Less acctive Reporters
+barplot(LessReporters$Freq[1:5], las = 2, names.arg = LessReporters$x[1:5],
+        col ="magenta4", main ="Top 5 less active Reporters",
+        ylab = "Tickets per Reporter")
+
+```
+
+
+**2.3 Owner Members Analysis Report:** The groups of Owners:
+
+```{r}
+
+ActiveOwner#Ranking the most active Owners
+MedianOwner#Ranking the Median Owners
+LessOwner[c(1:30),c(1:2)]#Ranking the 30 less active Owners
+
+#Grafic of Owners
+par(mfrow=c(1,3))
+
+#Grafic of Top 5 active Reporters
+par(mfrow=c(1,3))
+barplot(ActiveOwner$Freq[1:5], las = 2, names.arg = ActiveOwner$x[1:5],
+        col ="navyblue", main ="Top 5 active Owner",
+        ylab = "Tickets per Owner")
+
+#Top 5 Median Reporters
+barplot(MedianOwner$Freq[1:5], las = 2, names.arg = MedianOwner$x[1:5], 
+        col ="orange4", main ="Top 5 median Reporters",
+        ylab = "Tickets per Ownerr")
+
+#Top 5 Less acctive Reporters
+barplot(LessOwner$Freq[1:5], las = 2, names.arg = LessOwner$x[1:5],
+        col ="magenta4", main ="Top 5 less active Reporters",
+        ylab = "Tickets per Owner")
+
+```
+
+**2.4 Comparation of groups by Reporters and Owners:**
+
+```{r}
+WPCGroupR #Group Types of Reporters
+WPCGroupO #Group Types of Owners
+
+par(mfrow=c(1,2))
+barplot(WPCGroupR$MembersTotal,
+        names.arg=WPCGroupR$MembersTotal,
+        xlab="Reporter Groups",
+        ylab="Total Members",
+        legend=WPCGroupR$CoreGroupR,
+        col=rainbow(8),
+        main="Reporters per Groups",border="red")
+
+barplot(WPCGroupO$MembersTotal,
+        names.arg=WPCGroupO$MembersTotal,
+        xlab="Owners Groups",
+        ylab="Total Members",
+        legend=WPCGroupO$CoreGroupO,
+        col=rainbow(8),
+        main="Owners per Groups",border="red")
+
+
+```
+
+**3. POTENTIAL INDICATORS:** 
+
+* The "Sense of Unity" Dimension indicator: 
+  *  Mode_Agents_Rules: In a scale from O to 1, this indicator represents the principals rules the WP members play in the community: active, median and alien. This unformal rules are observed into formal groups: owners and reporters. The Hypothesis is  that the Reporters Group and the Owners Group have a similar distribution of tickets per its the respectives sub groups(active, median, and alien).
+  
+Hypothesis: $PropMo = PropMR$
+
+Means: percentual of tickets into any subgroups into Owner Groups are similar thand percentual of tickets into any subgroups into Reporter Groups
+
+  Where 
+    PropMo is the proportion of tickets per active, median, and alien groups of Owners, and
+    PropMR is the proportion of tickets per active, median, and alien groups of Reporters.
+    
+Hypothesis test: 
+
+```{r}
+similarityOR<-ifelse(PropMO>PropMR,1-(PropMO-PropMR),1-(PropMR-PropMO))
+similarityOR<-mean(similarityOR)
+similarityOR
+```
+
+Thus, Mode_Agents_Rules indicator is = similarityOR. 
+
+**4. FINAL CONCLUSIONS:** 
+
+There are more Reporters than Owners. Maybe because to report a problem in the WorPress Platform is easear than fix a problem. There are a two members, who can been considers the super active menbers of WP Community: SergeyBiryukov and johnbillion. SergeyBiryukov (number 1 of owners) was reponsable to 67 tickets, and also he report 15 Tickets (23o position of reporters). johnbillion (number 1 of owners) reports 72 tickets, and also was responsable for 16 tickets (3o position of owners). 
+
+The hypothesis test proof (result: 0.9772515) indicates that there are a strong coesion into formals groups of core: owners and reporters.
+
+Despite the most of tickets have no owner, there are not so many urgent issues. Around 93% of tickets are classified as Severity "normal", and 97% are classified as Priority "Normal". 
+
+According with this description, are recommended analyse in a bivariable description the folow variables:
+
+* Variables for setup a referential of the community (The "Referentiality" Dimension): Documentation of values, general view and beiefs of community
+
+* Variables for analyse the "Prescritivity" dimension: Analyse the community referential with  "Focuses" Variable, in order to verify if the members produced what they stablished into referential. 
+
+* Variables for analyse the "Sense of Unity" dimension: "Keywords"  Variable, in order to verify the correlation with groups 
+
+* Variables for analyse the  the "Receptivity" dimension: Groups of members, correlation between groups and Status, Type, Milestone variables

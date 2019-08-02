@@ -42,11 +42,12 @@ glimpse(TicketW)
 ```{r}
 
 #Bring the variables from the first univariable analysis
-Reporter<-table(TicketW$Reporter) 
-Reporter<-as.data.frame(as.table(Reporter))
-ActiveReporters = filter(Reporter,Freq>10)
-MedianReporters = filter(Reporter,Freq<10 & Freq>4)
-LessReporters = filter(Reporter,Freq<4)
+Reporter 
+Reporter
+ActiveReporters
+MedianReporters
+LessReporters
+
 
 #1.1 Analyse Keywords used for Active reporters
 Reporter_Keywords<- TicketW %>% select(Reporter,Keywords) #Table of Reporters and Keywords
@@ -54,9 +55,11 @@ summary(Reporter_Keywords)
 dim(Reporter_Keywords)
 glimpse(Reporter_Keywords)
 
+#
 nrow(ActiveReporters)#Quantity of Active Reporters
 AR<-ActiveReporters[1:34,1:1] #Select array of active reporters names to filter 
 AR<-as.character(AR) #Transform filter into caracter
+
 
 ActiveR_Key = subset(Reporter_Keywords, Reporter_Keywords$Reporter %in% AR) 
 ActiveR_Key<-table(ActiveR_Key$Keywords,ActiveR_Key$Reporter)
@@ -106,11 +109,10 @@ barplot(Most_Key_MR$Freq, las = 2, names.arg = Most_Key_MR$Var1,
         col ="lightgreen", main ="Freq. words of Median Reporters",
         ylab = "Word frequencies")
 barplot(Most_Key_LR$Freq, las = 2, names.arg = Most_Key_LR$Var1,
-        col ="lightgreen", main ="Freq. words of Median Reporters",
+        col ="plum2", main ="Freq. words of Median Reporters",
         ylab = "Word frequencies")
 
 ```
-
 
 
 
