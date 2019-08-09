@@ -44,7 +44,7 @@ glimpse(TicketW)
 
 ```{r}
 # Transform vector into a data frame with frequency of levels and proportion
-unianalysis = function (x) {
+.Unianalysis = function (x) {
         
         y<-table(x)
         y<-as.data.frame(as.table(y))
@@ -61,33 +61,33 @@ unianalysis = function (x) {
 ```{r}
 
 # Var1
-Status<-unianalysis(TicketW$Status)
+Status<-.Unianalysis(TicketW$Status)
 
 #Var2
-TType<-unianalysis(TicketW$Type)
+TType<-.Unianalysis(TicketW$Type)
 
 #Var3
-Priority<-unianalysis(TicketW$Priority)
+Priority<-.Unianalysis(TicketW$Priority)
 
 #Var4
-Milestone<-unianalysis(TicketW$Milestone)
+Milestone<-.Unianalysis(TicketW$Milestone)
 
 #Var5
-Component<-unianalysis(TicketW$Component) 
+Component<-.Unianalysis(TicketW$Component) 
 Component = filter(Component, Freq>100) # Filter components with more than 100 tickets
 sum(Component$Freq) #Total Tickets into most frequent components (more than 100 tickets)
 
 #Var6
-Severity<-unianalysis(TicketW$Severity)
+Severity<-.Unianalysis(TicketW$Severity)
 
 #Var7
-Focuses<-unianalysis(TicketW$Focuses)
+Focuses<-.Unianalysis(TicketW$Focuses)
 Focuses = filter(Focuses, Freq>10) # Filter Focuses with more than 10 tickets
 Focuses<-Focuses[order(Focuses$Freq, decreasing = TRUE),]
 sum(Focuses$Freq) #Total Tickets into most frequent components (more than 100 tickets)
 
 #Var8
-Keywords<-unianalysis(TicketW$Keywords)
+Keywords<-.Unianalysis(TicketW$Keywords)
 Keywords = filter(Keywords, Freq>8)
 Keywords<-Keywords[order(Keywords$Freq, decreasing = TRUE),]
 sum(Keywords$Freq)
@@ -101,7 +101,7 @@ sum(Keywords$Freq)
 ```{r}
 
 #1. Filter the most active group of reporters (Which reporter with more than 10 tickets) 
-    GroupActive = function(x) {
+    .GroupActive = function(x) {
         y = filter(x, Freq>10)
         x <- y[order(y$Freq, decreasing = TRUE),]
         group_prop<-prop.table(x$Freq) #Proportion
@@ -109,7 +109,7 @@ sum(Keywords$Freq)
         return(x)
     }
 #2. Filter the median active group
-    GroupMedian = function(x) {
+    .GroupMedian = function(x) {
         y = filter(x, Freq<10 & Freq>4)
         x <- y[order(y$Freq, decreasing = TRUE),]
         group_prop<-prop.table(x$Freq) #Proportion
@@ -117,7 +117,7 @@ sum(Keywords$Freq)
         return(x)
     }  
 #3. Filter the less active group 
-     GroupAlien = function(x) {
+     .GroupAlien = function(x) {
         y = filter(x, Freq<4)
         group_prop<-prop.table(x$Freq) #Proportion
         x<-data.frame(x,group_prop)
@@ -134,16 +134,16 @@ sum(Keywords$Freq)
 ```{r}
 #Find Groups and quantity of people for each group
              
-Reporter<-unianalysis(TicketW$Reporter) 
+Reporter<-.Unianalysis(TicketW$Reporter) 
 totalReporter<-nrow(Reporter)
 
-ActiveReporters<-GroupActive(Reporter)
+ActiveReporters<-.GroupActive(Reporter)
 totalAR<-nrow(ActiveReporters)
 
-MedianReporters<-GroupMedian(Reporter)
+MedianReporters<-.GroupMedian(Reporter)
 totalMR<-nrow(MedianReporters)
 
-LessReporters<-GroupAlien(Reporter)
+LessReporters<-.GroupAlien(Reporter)
 totalLR<-nrow(LessReporters)
 
 ```
@@ -154,18 +154,18 @@ totalLR<-nrow(LessReporters)
 
 **Goal:** Find type of owner member groups (actives, medians, and aliens), and find a line of cut, in order to use into Bivariate Analysis.
 ```{r}
-Owner<-unianalysis(TicketW$Owner) 
+Owner<-.Unianalysis(TicketW$Owner) 
 totalOwner<-nrow(Owner)
 
 #Find Groups and quantity of people for each group
              
-ActiveOwner<-GroupActive(Owner)
+ActiveOwner<-.GroupActive(Owner)
 totalAO<-nrow(ActiveOwner)
 
-MedianOwner<-GroupMedian(Owner)
+MedianOwner<-.GroupMedian(Owner)
 totalMO<-nrow(MedianOwner)
 
-LessOwner<-GroupAlien(Owner)
+LessOwner<-.GroupAlien(Owner)
 totalLO<-nrow(LessOwner)
 
 ```
