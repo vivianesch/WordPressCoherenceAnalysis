@@ -18,24 +18,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **1. EXPLORATORY ANALYSIS -BIVARIABLE ANALYSIS** 
 
-```{r}
+```{r Install, echo=FALSE}
 #Install
+install.packages("readr")
 install.packages("dplyr")
-install.packages("SnowballC") # for text stemming
-install.packages("wordcloud") # word-cloud generator 
-install.packages("RColorBrewer") # color palettes
+install.packages("plotly")
+install.packages("ggplot2")
 
 #Load
 library(readr)
 library(dplyr)
 library(plotly)
 library(ggplot2)
-library(tidyr)
-library(SnowballC)
-library(wordcloud)
-library(RColorBrewer)
-library(data.table)
 
+```
+
+```{r Read}
 #READ DATA
 TicketW <- read_csv('~/PhD Analysis/1. PhD escriptive exploratory analysis/TicketW.csv')
 View(TicketW) # Read 
@@ -43,18 +41,9 @@ glimpse(TicketW)
 
 ```
 
-**1 REPORTERS AND KEYWORDS ANALYSIS:** Reporters are WordPress Community members who find and report a problem from WP Platform, into a Ticket.
+**Functions** 
 
-**Goal:** Identify the most frequent used to each report member groups (actives, medians, and aliens).
-
-```{r}
-
-#Import Data
-TicketW <- read_csv('~/PhD Analysis/1. PhD escriptive exploratory analysis/TicketW.csv')
-View(TicketW) # Read 
-glimpse(TicketW)
-
-
+```{r Functions}
 #Bivariable analysis
 
 #Functions
@@ -81,6 +70,16 @@ glimpse(TicketW)
             w<-w[1:15,1:2] #Filter top 10
     return(w)
     } 
+
+```
+
+
+**1 REPORTERS AND KEYWORDS ANALYSIS:** Reporters are WordPress Community members who find and report a problem from WP Platform, into a Ticket.
+
+**Goal:** Identify the most frequent used to each report member groups (actives, medians, and aliens).
+
+```{r Analysis}
+
     #1.Analyse Keywords used for Active reporters
     Reporter_Keywords<- TicketW %>% select(Reporter,Keywords) #Table of Reporters and Keywords
     summary(Reporter_Keywords)
@@ -101,7 +100,18 @@ Most_Key_MR<-.Top.15.Group(Reporter_Keywords,Reporter_Keywords$Reporter,MR,Repor
     LR<-.List.f.filter(LessReporters)
     # 10 top Keywords used by Alien Group 
 Most_Key_LR<-.Top.15.Group(Reporter_Keywords,Reporter_Keywords$Reporter,LR,Reporter_Keywords$Keywords) 
-    
+
+
+install.packages("tidyr")
+install.packages("SnowballC") # for text stemming
+install.packages("wordcloud") # word-cloud generator 
+install.packages("RColorBrewer") # color palettes
+
+library(SnowballC)
+library(wordcloud)
+library(RColorBrewer)
+library(data.table)
+
 
 par(mfrow=c(2,3))
     #Graphics of most frequent group words 

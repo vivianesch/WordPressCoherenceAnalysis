@@ -30,6 +30,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(readr)
 library(dplyr)
 library(plotly)
+library(tidyr)
 TicketW <- read_csv('~/PhD Analysis/1. PhD escriptive exploratory analysis/TicketW.csv')
 View(TicketW)
 dim(TicketW) #dimension
@@ -100,30 +101,25 @@ sum(Keywords$Freq)
 
 ```{r}
 
-#1. Filter the most active group of reporters (Which reporter with more than 10 tickets) 
+#1. Filter the most active group of reporters  
     .GroupActive = function(x) {
         y = filter(x, Freq>10)
         x <- y[order(y$Freq, decreasing = TRUE),]
-        group_prop<-prop.table(x$Freq) #Proportion
-        x<-data.frame(x,group_prop) 
         return(x)
-    }
+}
 #2. Filter the median active group
-    .GroupMedian = function(x) {
+.GroupMedian = function(x) {
         y = filter(x, Freq<10 & Freq>4)
         x <- y[order(y$Freq, decreasing = TRUE),]
-        group_prop<-prop.table(x$Freq) #Proportion
-        x<-data.frame(x,group_prop)
         return(x)
-    }  
+}  
 #3. Filter the less active group 
-     .GroupAlien = function(x) {
+.GroupAlien = function(x) {
         y = filter(x, Freq<4)
-        group_prop<-prop.table(x$Freq) #Proportion
-        x<-data.frame(x,group_prop)
         x <- y[order(y$Freq, decreasing = TRUE),]
         return(x)
-     }
+}
+
      
 ```
  
@@ -280,20 +276,20 @@ LessOwner[c(1:30),c(1:2)]#Ranking the 30 less active Owners
 #Grafic of Owners
 par(mfrow=c(1,3))
 
-#Grafic of Top 5 active Reporters
+#Grafic of Top 5 active Owners
 par(mfrow=c(1,3))
 barplot(ActiveOwner$Freq[1:5], las = 2, names.arg = ActiveOwner$x[1:5],
-        col ="navyblue", main ="Top 5 active Owner",
+        col ="navyblue", main ="Top 5 active Owners",
         ylab = "Tickets per Owner")
 
-#Top 5 Median Reporters
+#Top 5 Median Owners
 barplot(MedianOwner$Freq[1:5], las = 2, names.arg = MedianOwner$x[1:5], 
-        col ="orange4", main ="Top 5 median Reporters",
+        col ="orange4", main ="Top 5 median Owners",
         ylab = "Tickets per Ownerr")
 
-#Top 5 Less acctive Reporters
+#Top 5 Less acctive Owners
 barplot(LessOwner$Freq[1:5], las = 2, names.arg = LessOwner$x[1:5],
-        col ="magenta4", main ="Top 5 less active Reporters",
+        col ="magenta4", main ="Top 5 less active Owners",
         ylab = "Tickets per Owner")
 
 ```
@@ -364,3 +360,5 @@ According with this description, are recommended analyse in a bivariable descrip
 * Variables for analyse the "Sense of Unity" dimension: "Keywords"  Variable, in order to verify the correlation with groups 
 
 * Variables for analyse the  the "Receptivity" dimension: Groups of members, correlation between groups and Status, Type, Milestone variables
+
+

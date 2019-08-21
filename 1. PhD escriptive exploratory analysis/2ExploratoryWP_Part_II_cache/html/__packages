@@ -1,0 +1,14 @@
+base
+RevoUtilsMath
+RevoUtils
+readr
+dplyr
+ggplot2
+plotly
+tidyr
+knitr
+rmarkdown
+SnowballC
+RColorBrewer
+wordcloud
+bindrcpp

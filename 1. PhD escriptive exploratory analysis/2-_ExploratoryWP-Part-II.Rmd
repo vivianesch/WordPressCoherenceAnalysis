@@ -18,9 +18,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **1. EXPLORATORY ANALYSIS -BIVARIABLE ANALYSIS** 
 
-```{r}
+```{r Install Packages, echo=FALSE}
 #Install
 install.packages("dplyr")
+install.packages("readr")
+install.packages("dplyr")
+install.packages("plotly")
+install.packages("ggplot2")
+install.packages("tidyr")
 install.packages("SnowballC") # for text stemming
 install.packages("wordcloud") # word-cloud generator 
 install.packages("RColorBrewer") # color palettes
@@ -36,6 +41,9 @@ library(wordcloud)
 library(RColorBrewer)
 library(data.table)
 
+```
+
+```{r Read Data}
 #READ DATA
 TicketW <- read_csv('~/PhD Analysis/1. PhD escriptive exploratory analysis/TicketW.csv')
 View(TicketW) # Read 
@@ -43,18 +51,9 @@ glimpse(TicketW)
 
 ```
 
-**1 REPORTERS AND KEYWORDS ANALYSIS:** Reporters are WordPress Community members who find and report a problem from WP Platform, into a Ticket.
+**Functions** 
 
-**Goal:** Identify the most frequent used to each report member groups (actives, medians, and aliens).
-
-```{r}
-
-#Import Data
-TicketW <- read_csv('~/PhD Analysis/1. PhD escriptive exploratory analysis/TicketW.csv')
-View(TicketW) # Read 
-glimpse(TicketW)
-
-
+```{r Functions}
 #Bivariable analysis
 
 #Functions
@@ -81,6 +80,16 @@ glimpse(TicketW)
             w<-w[1:15,1:2] #Filter top 10
     return(w)
     } 
+
+```
+
+
+**1 REPORTERS AND KEYWORDS ANALYSIS:** Reporters are WordPress Community members who find and report a problem from WP Platform, into a Ticket.
+
+**Goal:** Identify the most frequent used to each report member groups (actives, medians, and aliens).
+
+```{r Keywords and Reporters Variables Analysis}
+
     #1.Analyse Keywords used for Active reporters
     Reporter_Keywords<- TicketW %>% select(Reporter,Keywords) #Table of Reporters and Keywords
     summary(Reporter_Keywords)
