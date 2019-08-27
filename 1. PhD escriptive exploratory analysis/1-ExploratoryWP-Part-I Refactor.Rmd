@@ -274,7 +274,6 @@ MedianOwner#Ranking the Median Owners
 LessOwner[c(1:30),c(1:2)]#Ranking the 30 less active Owners
 
 #Grafic of Owners
-par(mfrow=c(1,3))
 
 #Grafic of Top 5 active Owners
 par(mfrow=c(1,3))
