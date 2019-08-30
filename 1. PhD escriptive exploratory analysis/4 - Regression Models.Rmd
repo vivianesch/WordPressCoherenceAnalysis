@@ -1,0 +1,38 @@
+---
+title: "Regression Models"
+author: "Viviane Schneider"
+date: "27/08/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Regression Models
+
+1: Introduction
+2: Residuals
+3: Least Squares Estimation
+4: Residual Variation  
+5: Introduction to Multivariable Regression
+6: MultiVar Examples
+7: MultiVar Examples2 
+8: MultiVar Examples3                      
+9: Residuals Diagnostics and Variation
+10: Variance Inflation Factors              
+11: Overfitting and Underfitting 
+12: Binary Outcomes                         
+13: Count Outcomes          
+
+```{r cars}
+summary(cars)
+```
+
+
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+

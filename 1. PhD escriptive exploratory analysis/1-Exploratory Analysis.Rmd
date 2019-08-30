@@ -1,0 +1,43 @@
+---
+title: "Exploratory Analysis"
+author: "Viviane Schneider"
+date: "27/08/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exploratory Analysis
+
+ 1: Principles of Analytic Graphs
+ 2: Exploratory Graphs
+ 3: Graphics Devices in R
+ 4: Plotting Systems 
+ 5: Base Plotting System 
+ 6: Lattice Plotting System      
+ 7: Working with Colors 
+ 8: GGPlot2 Part1                
+ 9: GGPlot2 Part2      
+ 10: GGPlot2 Extras               
+11: Hierarchical Clustering 
+12: K Means Clustering           
+13: Dimension Reduction   
+14: Clustering Example           
+15: CaseStudy                      
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
