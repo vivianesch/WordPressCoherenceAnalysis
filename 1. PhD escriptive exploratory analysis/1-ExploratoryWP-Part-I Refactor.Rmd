@@ -158,20 +158,18 @@ totalLO <-nrow(LessOwner)
 
 ```{r}
 #Total members per Reporter
-MembersTotalR<-c(totalReporter,totalAR,totalMR,totalLR)
-CoreGroupR<-c("Reporters","Active Reporters","Median Reporters","Alien Reporters")
-PropMR<-prop.table(MembersTotalR)# Proportion
-WPCGroupR<-data.frame(CoreGroupR,MembersTotalR,PropMR)
+MembersTotal<-c(totalAR,totalMR,totalLR)
+CoreGroup<-rbind("Active Reporters","Median Reporters","Alien Reporters")
+WPCGroupR<-data.frame(CoreGroup,MembersTotal)
 
 #Total members per Owner
-MembersTotalO<-c(totalOwner,totalAO,totalMO,totalLO)
-CoreGroupO<-c("Owners","Active Owners","Median Owners","Alien Owners")
-PropMO<-prop.table(MembersTotalO) #Proportion
-WPCGroupO<-data.frame(CoreGroupO,MembersTotalO,PropMO)
+MembersTotal<-c(totalAO,totalMO,totalLO)
+CoreGroup<-rbind("Active Owners","Median Owners","Alien Owners")
+WPCGroupO<-data.frame(CoreGroup,MembersTotal)
 
 #Total members per every groups
-MembersTotal<- rbind(totalOwner,totalAO,totalMO,totalLO, totalReporter,totalAR,totalMR,totalLR)
-CoreGroup <- rbind("Owners","Active Owners","Median Owners","Alien Owners", "Reporters","Active Reporters","Median Reporters","Alien Reporters")
+MembersTotal<- c(totalOwner,totalReporter)
+CoreGroup <- rbind("Owners","Reporters")
 WPCGroups <- data.frame(CoreGroup,MembersTotal)
 
 
@@ -283,7 +281,7 @@ barplot(WPCGroupR$MembersTotal,
         names.arg=WPCGroupR$MembersTotal,
         xlab="Reporter Groups",
         ylab="Total Members",
-        legend=WPCGroupR$CoreGroupR,
+        legend=WPCGroupR$CoreGroup,
         col=rainbow(8),
         main="Reporters per Groups",border="red")
 
@@ -291,12 +289,43 @@ barplot(WPCGroupO$MembersTotal,
         names.arg=WPCGroupO$MembersTotal,
         xlab="Owners Groups",
         ylab="Total Members",
-        legend=WPCGroupO$CoreGroupO,
+        legend=WPCGroupO$CoreGroup,
         col=rainbow(8),
         main="Owners per Groups",border="red")
 
 
 ```
+
+
+
+
+```{r}
+# Load ggplot2
+library(ggplot2)
+library(dplyr)
+# library
+library(treemap)
+
+# treemap
+.Tree_Map = function(x){
+  group <- paste(x$CoreGroup, x$MembersTotal)
+  value <- x$MembersTotal
+  data <- data.frame(group,value)
+     treemap(data,
+            index="group",
+            vSize="value",
+            type="index")  
+}
+
+
+par(mfrow=c(1,3))
+.Tree_Map(WPCGroups) #Total Owner and Reporters
+.Tree_Map(WPCGroupO) #Groups of Owners 
+.Tree_Map(WPCGroupR) #Groups of Reporters
+
+```
+
+
 
 **3. POTENTIAL INDICATORS:** 
 
@@ -314,9 +343,14 @@ Means: percentual of tickets into any subgroups into Owner Groups are similar th
 Hypothesis test: 
 
 ```{r}
+
+PropMR<-prop.table(WPCGroupR$MembersTotal)# Proportion
+PropMO<-prop.table(WPCGroupO$MembersTotal)# Proportion
+
 similarityOR<-ifelse(PropMO>PropMR,1-(PropMO-PropMR),1-(PropMR-PropMO))
 similarityOR<-mean(similarityOR)
 similarityOR
+
 ```
 
 Thus, Mode_Agents_Rules indicator is = similarityOR. 
