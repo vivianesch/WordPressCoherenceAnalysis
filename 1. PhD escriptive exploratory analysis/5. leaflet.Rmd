@@ -1,0 +1,80 @@
+---
+title: "5. Maps"
+author: "Viviane Schneider"
+date: "02/09/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Leaflet
+
+
+```{r leaflet}
+library(leaflet)
+my_map <-leaflet() %>%
+  addTiles()
+my_map
+
+```
+
+
+```{r leaflet}
+library(leaflet)
+my_map <-leaflet() %>%
+  addTiles()
+my_map
+
+
+my_map <- my_map %>%
+         addMarkers(lat =-27.621196, lng =-48.677407, 
+         popup = "Minha Casa") %>%
+         names
+
+My_icon <- makeIcon(iconUrl = "https://viviane.ijas.me/wp-content/uploads/2019/08/VS3.jpg")
+
+my_map <- my_map %>%
+  addMarkers(lat =-27.621196, lng =-48.677407, 
+             popup = "Minha Casa",
+             icon = My_icon)
+
+my_map
+
+```
+
+
+## My first map
+
+
+
+```{r leaflet}
+library(leaflet)
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(jsonlite)
+
+
+
+
+Amaz <- read_delim("Focos.2019-08-31.2019-09-01.csv", 
+                   ";", escape_double = FALSE, trim_ws = TRUE)
+tidy(Amaz)
+
+head(Amaz)
+
+m <- leaflet(Amaz) %>% addTiles() %>% 
+    setView(-3.450, -64.30, zoom = 8) %>% 
+    addCircles(~Amaz$Longitud, ~Amaz$Latitude, popup=Amaz$Municipi, weight = 3, radius=40,  color="#ffa500", stroke = TRUE, fillOpacity = 0.8) %>% 
+    addLegend("bottomright", colors= "#ffa500", labels="Dunkin'", title="In Amazonia")
+
+
+  
+    
+           
+m
+
+```
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

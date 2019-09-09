@@ -73,6 +73,11 @@ students3 %>%
   gather(class, grade, class1:class5, na.rm = TRUE) %>%
   spread(test, grade) %>%
   print
+
+students3 %>%
+  gather(cod_programa, nota_programa, nro_nota_doutorado:nro_nota_mestrado_prof, na.rm = TRUE, na.rm != 0) %>%
+  spread(cod_programa, nota_programa) %>%
+  print
 # We want the values in the class columns to be
 # 1, 2, ..., 5 and not class1, class2, ..., class5.
 #

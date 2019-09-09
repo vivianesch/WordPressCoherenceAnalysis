@@ -3,10 +3,7 @@ title: "WordPress Agents Exploratory Analysis - Part II"
 author: "Viviane Schneider"
 date: "07/29/2019"
 output: 
-  html_document: 
-    keep_md: yes
-editor_options: 
-  chunk_output_type: console
+html_document: 
 ---
 **Type of Analysis:** Descriptive analysis - Bivariate description
 

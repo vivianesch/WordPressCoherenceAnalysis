@@ -31,6 +31,7 @@ library(readr)
 library(dplyr)
 library(plotly)
 library(tidyr)
+
 TicketW <- read_csv('~/PhD Analysis/1. PhD escriptive exploratory analysis/TicketW.csv')
 View(TicketW)
 dim(TicketW) #dimension
@@ -46,12 +47,10 @@ glimpse(TicketW)
 ```{r}
 # Transform vector into a data frame with frequency of levels and proportion
 .Unianalysis = function (x) {
-        
-        y<-table(x)
-        y<-as.data.frame(as.table(y))
-        general_prop<-prop.table(y$Freq) #Proportion
-        y<-data.frame(y, general_prop) 
-        return(y)
+    y <- as.data.frame(as.table(table(x)))
+    y <- mutate(y, proportion = prop.table(y$Freq) *100)#Proportion
+    y <- arrange(y, desc(y$Freq))
+return(y)
 }
 
 ```
@@ -75,7 +74,7 @@ Milestone<-.Unianalysis(TicketW$Milestone)
 
 #Var5
 Component<-.Unianalysis(TicketW$Component) 
-Component = filter(Component, Freq>100) # Filter components with more than 100 tickets
+Component = filter(Component, Freq>90) # Filter components with more than 100 tickets
 sum(Component$Freq) #Total Tickets into most frequent components (more than 100 tickets)
 
 #Var6
@@ -101,28 +100,15 @@ sum(Keywords$Freq)
 
 ```{r}
 
-#1. Filter the most active group of reporters  
-    .GroupActive = function(x) {
-        y = filter(x, Freq>10)
-        x <- y[order(y$Freq, decreasing = TRUE),]
-        return(x)
-}
-#2. Filter the median active group
-.GroupMedian = function(x) {
-        y = filter(x, Freq<10 & Freq>4)
-        x <- y[order(y$Freq, decreasing = TRUE),]
-        return(x)
-}  
-#3. Filter the less active group 
-.GroupAlien = function(x) {
-        y = filter(x, Freq<4)
+#1. Filter Group of agents 
+.Grouping = function(x, less, more) {
+        y = filter(x, Freq < less & Freq > more)
         x <- y[order(y$Freq, decreasing = TRUE),]
         return(x)
 }
 
-     
 ```
- 
+
 **1.2 Variable Members Analysis - Reporters:** Reporters are WordPress Community members who find and report a problem from WP Platform, into a Ticket.
 
 **Goal:** Find type of report member groups (actives, medians, and aliens), and find a line of cut, in order to use into Bivariate Analysis.
@@ -133,13 +119,13 @@ sum(Keywords$Freq)
 Reporter<-.Unianalysis(TicketW$Reporter) 
 totalReporter<-nrow(Reporter)
 
-ActiveReporters<-.GroupActive(Reporter)
+ActiveReporters<-.Grouping(Reporter, 1000, 10)
 totalAR<-nrow(ActiveReporters)
 
-MedianReporters<-.GroupMedian(Reporter)
+MedianReporters<-.Grouping(Reporter, 10, 4)
 totalMR<-nrow(MedianReporters)
 
-LessReporters<-.GroupAlien(Reporter)
+LessReporters<-.Grouping(Reporter, 4, 0)
 totalLR<-nrow(LessReporters)
 
 ```
@@ -150,19 +136,20 @@ totalLR<-nrow(LessReporters)
 
 **Goal:** Find type of owner member groups (actives, medians, and aliens), and find a line of cut, in order to use into Bivariate Analysis.
 ```{r}
-Owner<-.Unianalysis(TicketW$Owner) 
-totalOwner<-nrow(Owner)
+Owner <-.Unianalysis(TicketW$Owner) 
+totalOwner <-nrow(Owner)
 
 #Find Groups and quantity of people for each group
              
-ActiveOwner<-.GroupActive(Owner)
-totalAO<-nrow(ActiveOwner)
+ActiveOwner <-.Grouping(Owner, 1000, 10)
+totalAO <-nrow(ActiveOwner)
 
-MedianOwner<-.GroupMedian(Owner)
-totalMO<-nrow(MedianOwner)
+MedianOwner <-.Grouping(Owner, 10, 4)
+totalMO <-nrow(MedianOwner)
 
-LessOwner<-.GroupAlien(Owner)
-totalLO<-nrow(LessOwner)
+LessOwner <-.Grouping(Owner, 4, 0)
+totalLO <-nrow(LessOwner)
+
 
 ```
 
@@ -182,6 +169,12 @@ CoreGroupO<-c("Owners","Active Owners","Median Owners","Alien Owners")
 PropMO<-prop.table(MembersTotalO) #Proportion
 WPCGroupO<-data.frame(CoreGroupO,MembersTotalO,PropMO)
 
+#Total members per every groups
+MembersTotal<- rbind(totalOwner,totalAO,totalMO,totalLO, totalReporter,totalAR,totalMR,totalLR)
+CoreGroup <- rbind("Owners","Active Owners","Median Owners","Alien Owners", "Reporters","Active Reporters","Median Reporters","Alien Reporters")
+WPCGroups <- data.frame(CoreGroup,MembersTotal)
+
+
 ```
 
 
@@ -190,50 +183,59 @@ WPCGroupO<-data.frame(CoreGroupO,MembersTotalO,PropMO)
 **2.1  Variables related with members Report:** Variables selected to bivariate analysis are Component(+100 tickets per level), Focuses (+1 Ticket per level), Keywords(+9 tickets per level), Type, Status.
 
 ```{r}
+library(plotrix)
+library(plotly)
+library(ggplot2)
+library(wordcloud)
+
+#Graphic Function
+#Fun Plot
+.Plot_FunPlot = function(x,y) {
+  fan.plot(x$Freq,
+           max.span=pi,
+           labels=paste(x$x, x$Freq, sep=": "),
+            main=y,ticks=360)
+}
+#Word Plot
+.Plot_word = function(x, num1, num2) {
+     wordcloud(words = x$x, freq = x$Freq, min.freq = num1,
+              max.words=num2, random.order=FALSE, rot.per=0.35, 
+              colors=brewer.pal(8, "Dark2")) 
+}
 
 Status#Var1
 #Graphics
-pie(Status$Freq, main="Frequency of Tickets Status", label=Status$x, col = rainbow(7))
+.Plot_FunPlot(Status, "Tickets per Status")
 
 TType# Var2
 #Graphics
-pie(TType$Freq, main="Frequency of Tickets Type", label=TType$x, col = rainbow(7))
+.Plot_FunPlot(TType, "Tickets per Type")
 
 Priority# Var3
 #Graphics
-barplot(Priority$Freq, las = 2, names.arg = Priority$x,
-        col =rainbow(7), main ="Frequency of Tickets Priority",
-        ylab = "Priority frequency")
+.Plot_FunPlot(Priority, "Tickets per Priority")
 
 Milestone#Var4
 #Graphics
-barplot(Milestone$Freq, las = 2, names.arg = Milestone$x,
-        col =rainbow(7), main ="Frequency of Tickets Milestone",
-        ylab = "Milestone frequency")
+.Plot_FunPlot(Milestone, "Tickets per Milestone")
 
 Component#Var5
-#Graphics
-barplot(Component$Freq, las = 2, names.arg = Component$x,
-        col = "aquamarine", main ="Most frequent Components",
-        ylab = "Component frequencies")
+#Graphic
+.Plot_FunPlot(Component, "Tickets per Component (more than 90 tickets)")
 
 Severity #Var6
 #Graphics
-barplot(Severity$Freq, las = 2, names.arg = Severity$x,
-        col = rainbow(7), main ="Frequency of Tickets Severity",
-        ylab = "Severity frequencies")
+.Plot_FunPlot(Severity, "Tickets per Severity")
 
 Focuses#Var7
 #Graphics
-barplot(Focuses$Freq, las = 2, names.arg = Focuses$x,
-        col ="lightblue", main ="Frequency of Tickets Focuses",
-        ylab = "Focuses frequencies")
+pie(Focuses$Freq, main="Focuses", label = paste(Focuses$x, sep=": ", Focuses$Freq), col = rainbow(7))
+.Plot_word(Focuses, 20, 200)
 
 Keywords#Var8
 #Graphics
-barplot(Keywords$Freq, las = 2, names.arg = Keywords$x,
-        col ="orangered", main ="Frequency of Tickets Keywords",
-        ylab = "Keywords frequencies")
+pie(Keywords$Freq, main="Focuses", label = paste(Keywords$x, sep=": ", Keywords$Freq), col = rainbow(7))
+.Plot_word(Keywords, 4, 300)
 
 ```
 
@@ -247,20 +249,10 @@ MedianReporters #Ranking the Median active reporters
 LessReporters[c(1:30),c(1:2)] #Ranking the 30 less active Reporters
 
 #Grafic of Top 5 active Reporters
-par(mfrow=c(1,3))
-barplot(ActiveReporters$Freq[1:5], las = 2, names.arg = ActiveReporters$x[1:5],
-        col ="navyblue", main ="Top 5 active Reporters",
-        ylab = "Tickets per Reporter")
+.Plot_FunPlot(ActiveReporters[1:5, 1:2], "5 Top Active Reporters")
+.Plot_FunPlot(MedianReporters[1:5, 1:2], "5 Top Median Reporters")
+.Plot_FunPlot(LessReporters[1:5, 1:2], "5 Top Less Active Reporters")
 
-#Top 5 Median Reporters
-barplot(MedianReporters$Freq[1:5], las = 2, names.arg = MedianReporters$x[1:5], 
-        col ="orange4", main ="Top 5 median Reporters",
-        ylab = "Tickets per Reporter")
-
-#Top 5 Less acctive Reporters
-barplot(LessReporters$Freq[1:5], las = 2, names.arg = LessReporters$x[1:5],
-        col ="magenta4", main ="Top 5 less active Reporters",
-        ylab = "Tickets per Reporter")
 
 ```
 
@@ -276,29 +268,16 @@ LessOwner[c(1:30),c(1:2)]#Ranking the 30 less active Owners
 #Grafic of Owners
 
 #Grafic of Top 5 active Owners
-par(mfrow=c(1,3))
-barplot(ActiveOwner$Freq[1:5], las = 2, names.arg = ActiveOwner$x[1:5],
-        col ="navyblue", main ="Top 5 active Owners",
-        ylab = "Tickets per Owner")
-
-#Top 5 Median Owners
-barplot(MedianOwner$Freq[1:5], las = 2, names.arg = MedianOwner$x[1:5], 
-        col ="orange4", main ="Top 5 median Owners",
-        ylab = "Tickets per Ownerr")
-
-#Top 5 Less acctive Owners
-barplot(LessOwner$Freq[1:5], las = 2, names.arg = LessOwner$x[1:5],
-        col ="magenta4", main ="Top 5 less active Owners",
-        ylab = "Tickets per Owner")
+.Plot_FunPlot(ActiveOwner[1:5, 1:2], "5 Top Active Owners")
+.Plot_FunPlot(MedianOwner[1:5, 1:2], "5 Top Median Owners")
+.Plot_FunPlot(LessOwner[1:5, 1:2], "5 Top Less Active Owners")
 
 ```
 
 **2.4 Comparation of groups by Reporters and Owners:**
 
 ```{r}
-WPCGroupR #Group Types of Reporters
-WPCGroupO #Group Types of Owners
-
+WPCGroups
 par(mfrow=c(1,2))
 barplot(WPCGroupR$MembersTotal,
         names.arg=WPCGroupR$MembersTotal,
