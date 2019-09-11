@@ -2,8 +2,7 @@
 title: "WordPress Agents Exploratory Analysis - Part II"
 author: "Viviane Schneider"
 date: "07/29/2019"
-output: 
-html_document: 
+output: html_document
 ---
 **Type of Analysis:** Descriptive analysis - Bivariate description
 
@@ -15,8 +14,6 @@ html_document:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
-
 ```
 
 
@@ -46,73 +43,6 @@ glimpse(TicketW)
 ```
 
 
-```{r echo=FALSE}
-
-#Bring old functions and variables
-
-.Unianalysis = function (x) {
-        
-        y<-table(x)
-        y<-as.data.frame(as.table(y))
-        general_prop<-prop.table(y$Freq) #Proportion
-        y<-data.frame(y, general_prop) 
-        return(y)
-}#1. Filter the most active group of reporters (Which reporter with more than 10 tickets) 
-    .GroupActive = function(x) {
-        y = filter(x, Freq>10)
-        x <- y[order(y$Freq, decreasing = TRUE),]
-        group_prop<-prop.table(x$Freq) #Proportion
-        x<-data.frame(x,group_prop) 
-        return(x)
-    }
-#2. Filter the median active group
-    .GroupMedian = function(x) {
-        y = filter(x, Freq<10 & Freq>4)
-        x <- y[order(y$Freq, decreasing = TRUE),]
-        group_prop<-prop.table(x$Freq) #Proportion
-        x<-data.frame(x,group_prop)
-        return(x)
-    }  
-#3. Filter the less active group 
-     .GroupAlien = function(x) {
-        y = filter(x, Freq<4)
-        group_prop<-prop.table(x$Freq) #Proportion
-        x<-data.frame(x,group_prop)
-        x <- y[order(y$Freq, decreasing = TRUE),]
-        return(x)
-     }
-     
-#Bring the Reporter variables
-     
-Reporter<-.Unianalysis(TicketW$Reporter) 
-totalReporter<-nrow(Reporter)
-
-ActiveReporters<-.GroupActive(Reporter)
-totalAR<-nrow(ActiveReporters)
-
-MedianReporters<-.GroupMedian(Reporter)
-totalMR<-nrow(MedianReporters)
-
-LessReporters<-.GroupAlien(Reporter)
-totalLR<-nrow(LessReporters)
-
-#Bring the Owner variables
-
-Owner<-.Unianalysis(TicketW$Owner) 
-totalReporter<-nrow(Reporter)
-
-ActiveOwners<-.GroupActive(Owner)
-totalAR<-nrow(ActiveReporters)
-
-MedianOwners<-.GroupMedian(Owner)
-totalMR<-nrow(MedianReporters)
-
-LessOwners<-.GroupAlien(Owner)
-totalLR<-nrow(LessOwners)
-
-```
-
-
 **Functions** 
 
 ```{r Bi_analysis}
@@ -133,7 +63,7 @@ totalLR<-nrow(LessOwners)
     # f is a list of the group achieve from Function .List.f.filter()
     .Top.15.Group = function(x,y,f){
         z = subset(x, y %in% f) 
-        z<-table(z[ ,2],z[ ,1])
+         z<-table(z[ ,2],z[ ,1])
           d<-dim(z)
             w<-rowSums(z[1:d[1],1:d[2]])
             w<-as.data.frame(as.table(w)) # Transform to a data frame
@@ -160,17 +90,17 @@ totalLR<-nrow(LessOwners)
 #1.1 Analyse Keywords used for Active reporters
  
      AR<-.List.f.filter(ActiveReporters)
-    # 10 top Keywords used by Active Group
+    # 15 top Keywords used by Active Group
 Most_Key_AR<-.Top.15.Group(Reporter_Keywords,Reporter_Keywords$Reporter,AR) 
 
    #1.2 Analyse Keywords used for Median reporters
     MR<-.List.f.filter(MedianReporters)
-    # 10 top Keywords used by Median Group
+    # 15 top Keywords used by Median Group
 Most_Key_MR<-.Top.15.Group(Reporter_Keywords,Reporter_Keywords$Reporter,MR) 
     
 #1.3 Analyse Keywords used for Alien reporters
     LR<-.List.f.filter(LessReporters)
-    # 10 top Keywords used by Alien Group 
+    # 15 top Keywords used by Alien Group 
 Most_Key_LR<-.Top.15.Group(Reporter_Keywords,Reporter_Keywords$Reporter,LR) 
 
 
